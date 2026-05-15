@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FI Workload — ISSeP</title>
+<title>Expertise Feu — Charge de travail ISSeP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
     --bg: #f5f4f0;
     --surface: #ffffff;
-    --surface2: #eeecea;
     --border: rgba(0,0,0,0.09);
     --text: #1a1a18;
     --muted: #7a7870;
@@ -23,661 +24,288 @@
     --teal: #0d6b5a;
     --teal-light: #e8f5f2;
     --amber: #a05c00;
-    --amber-light: #fdf3e3;
-    --radius: 10px;
-    --radius-sm: 6px;
   }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .navbar { background: var(--surface) !important; border-bottom: 1px solid var(--border); height: 56px; padding: 0 1.5rem; }
+  .navbar-brand { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--text) !important; display: flex; align-items: center; gap: 10px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); display: inline-block; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
-  }
+  .nav-tabs { border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .nav-tabs .nav-link { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); border: none; padding: 8px 16px; border-bottom: 2px solid transparent; border-radius: 0; }
+  .nav-tabs .nav-link.active { color: var(--text); background: none; border-bottom: 2px solid var(--text); }
+  .nav-tabs .nav-link:hover { color: var(--text); border-color: transparent; }
 
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+  .card { background: var(--surface); border: 1px solid var(--border) !important; border-radius: 10px !important; }
+  .card-title-mono { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
 
-  .logo {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .last-updated {
-    font-size: 11px;
-    color: var(--faint);
-    font-family: 'DM Mono', monospace;
-  }
-
-  .status-pill {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-family: 'DM Mono', monospace;
-    background: var(--red-light);
-    color: var(--red);
-    border: 1px solid rgba(192,57,43,0.2);
-  }
-
-  main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
-
-  .page-title {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.08em;
-    color: var(--faint);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-  }
-
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0,1fr));
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-
-  .metric {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-  }
-
-  .metric-label {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
-  }
-
-  .metric-value {
-    font-size: 24px;
-    font-weight: 500;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
+  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
+  .metric-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 6px; }
+  .metric-value { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 4px; color: var(--text); }
   .metric-value.red { color: var(--red); }
   .metric-value.amber { color: var(--amber); }
+  .metric-sub { font-size: 11px; color: var(--faint); }
 
-  .metric-sub {
-    font-size: 11px;
-    color: var(--faint);
-  }
+  .tanks-row { display: flex; gap: 1.25rem; height: 200px; }
+  .tank-col { flex: 1; display: flex; flex-direction: column; gap: 8px; height: 100%; }
+  .tank-name { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; }
+  .tank-outer { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; position: relative; background: var(--bg); }
+  .tank-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 1s ease; border-radius: 0 0 6px 6px; }
+  .tank-year-line { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--amber); pointer-events: none; }
+  .tank-year-label { position: absolute; right: 5px; font-size: 9px; color: var(--amber); font-family: 'DM Mono', monospace; transform: translateY(-13px); }
+  .tank-pct { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 13px; font-weight: 500; font-family: 'DM Mono', monospace; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .alert-workload { background: var(--red-light); border: 1px solid rgba(192,57,43,0.25); border-left: 3px solid var(--red); border-radius: 6px; padding: 0.75rem 1rem; font-size: 12px; color: var(--red); margin-top: 1rem; font-family: 'DM Mono', monospace; line-height: 1.6; }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-  }
-
-  .card-title {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  /* ---- TANKS ---- */
-  .tanks-row {
-    display: flex;
-    gap: 1.25rem;
-    height: 200px;
-    align-items: flex-end;
-  }
-
-  .tank-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 8px;
-  }
-
-  .tank-name {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    text-align: center;
-  }
-
-  .tank-outer {
-    flex: 1;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background: var(--bg);
-  }
-
-  .tank-fill {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    transition: height 1s ease;
-    border-radius: 0 0 6px 6px;
-  }
-
-  .tank-year-line {
-    position: absolute;
-    left: 0; right: 0;
-    border-top: 1.5px dashed var(--amber);
-  }
-
-  .tank-year-label {
-    position: absolute;
-    right: 5px;
-    font-size: 9px;
-    color: var(--amber);
-    font-family: 'DM Mono', monospace;
-    transform: translateY(-12px);
-  }
-
-  .tank-pct {
-    position: absolute;
-    bottom: 8px; left: 0; right: 0;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: 'DM Mono', monospace;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  }
-
-  /* ---- ALERT BANNER ---- */
-  .alert {
-    background: var(--red-light);
-    border: 1px solid rgba(192,57,43,0.25);
-    border-left: 3px solid var(--red);
-    border-radius: var(--radius-sm);
-    padding: 0.75rem 1rem;
-    font-size: 12px;
-    color: var(--red);
-    margin-top: 1rem;
-    font-family: 'DM Mono', monospace;
-    line-height: 1.6;
-  }
-
-  /* ---- SPLIT BARS ---- */
-  .split-bar {
-    height: 32px;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    display: flex;
-    margin: 8px 0 4px;
-  }
-
-  .split-seg {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 500;
-    font-family: 'DM Mono', monospace;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: width 0.5s ease;
-  }
-
-  .split-legend {
-    display: flex;
-    gap: 16px;
-    font-size: 11px;
-    color: var(--muted);
-    flex-wrap: wrap;
-  }
-
+  .split-bar { height: 32px; border-radius: 6px; overflow: hidden; display: flex; margin: 8px 0 4px; }
+  .split-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; font-family: 'DM Mono', monospace; overflow: hidden; white-space: nowrap; }
+  .split-legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
   .split-legend span { display: flex; align-items: center; gap: 5px; }
   .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
-  /* ---- LOG TABLE ---- */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--faint);
-    text-align: left;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--border);
-    font-weight: 400;
-  }
-  td { padding: 7px 8px; border-bottom: 1px solid var(--border); color: var(--text); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg); }
+  .badge-wed { background: var(--red-light) !important; color: var(--red) !important; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; }
+  .badge-other { background: var(--blue-light) !important; color: var(--blue) !important; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; }
 
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-  }
+  .log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .log-table th { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); font-weight: 400; }
+  .log-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); }
+  .log-table tr:last-child td { border-bottom: none; }
+  .log-table tr:hover td { background: var(--bg); }
 
-  .badge-wed { background: var(--red-light); color: var(--red); }
-  .badge-other { background: var(--blue-light); color: var(--blue); }
+  .form-control, .form-select { font-family: 'DM Mono', monospace; font-size: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; }
+  .form-control:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,79,122,0.12); background: var(--surface); }
+  .form-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 0.04em; }
 
-  /* ---- ENTRY FORM ---- */
-  .form-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
+  .btn-dark-mono { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; }
+  .btn-dark-mono:hover { background: #333; color: var(--bg); }
+  .btn-outline-mono { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 7px 16px; cursor: pointer; }
+  .btn-danger-soft { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--red-light); color: var(--red); border: 1px solid rgba(192,57,43,0.2); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+  .btn-del { background: none; border: none; color: var(--faint); font-size: 14px; padding: 0 4px; cursor: pointer; }
+  .btn-del:hover { color: var(--red); }
 
-  input[type="date"], input[type="number"], input[type="text"], textarea {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    padding: 7px 10px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    color: var(--text);
-    outline: none;
-  }
+  .status-pill { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--red-light); color: var(--red); border: 1px solid rgba(192,57,43,0.2); }
+  .last-updated { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--faint); }
 
-  input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus {
-    border-color: var(--blue);
-  }
-
-  button {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    padding: 7px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--text);
-    color: var(--bg);
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  button:hover { opacity: 0.8; }
-  button.secondary { background: var(--surface); color: var(--text); }
-  button.danger-btn { background: var(--red-light); color: var(--red); border-color: rgba(192,57,43,0.2); }
-
-  .form-hint { font-size: 11px; color: var(--faint); margin-top: 4px; }
-
-  /* ---- CONFIG PANEL ---- */
-  .config-toggle {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    color: var(--faint);
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    text-decoration: underline;
-  }
-
-  .config-panel {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: none;
-  }
-
-  .config-panel.open { display: block; }
-  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .config-field label { display: block; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--faint); margin-bottom: 4px; }
-  .config-field input { width: 100%; }
-
-  .tab-row { display: flex; gap: 2px; margin-bottom: 1rem; }
-  .tab {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    padding: 5px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-  }
-  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-
-  .section { display: none; }
-  .section.active { display: block; }
-
-  .setup-steps {
-    counter-reset: steps;
-  }
-  .setup-step {
-    counter-increment: steps;
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    align-items: flex-start;
-  }
-  .step-num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--text);
-    color: var(--bg);
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .step-content { flex: 1; }
-  .step-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
-  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
-  code {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: var(--bg);
-    padding: 1px 5px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-  }
-  pre {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: var(--text);
-    color: var(--bg);
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    overflow-x: auto;
-    margin: 8px 0;
-    line-height: 1.7;
-  }
-  .copy-btn {
-    font-size: 10px;
-    padding: 3px 8px;
-    background: var(--surface2);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    float: right;
-    margin-left: 8px;
-    cursor: pointer;
-  }
-
-  @media (max-width: 700px) {
-    main { padding: 1rem; }
-    .metrics { grid-template-columns: 1fr 1fr; }
-    .grid2, .grid3 { grid-template-columns: 1fr; }
-    .config-grid { grid-template-columns: 1fr; }
-  }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--text); color: var(--bg); font-size: 11px; font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  pre { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--text); color: var(--bg); padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; line-height: 1.7; }
+  code { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--bg); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); color: var(--text); }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <div class="logo-dot"></div>
-    FI — Workload Monitor
-  </div>
-  <div class="header-right">
+<nav class="navbar sticky-top">
+  <span class="navbar-brand"><span class="logo-dot"></span>Expertise Feu — Charge de travail</span>
+  <div class="d-flex align-items-center gap-3">
     <span class="last-updated" id="lastUpdated">—</span>
-    <span class="status-pill" id="statusPill">loading</span>
+    <span class="status-pill" id="statusPill">chargement</span>
   </div>
-</header>
+</nav>
 
-<main>
+<div class="container-xl py-4">
 
-  <div class="tab-row">
-    <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
-    <button class="tab" onclick="switchTab('log')">Log time</button>
-    <button class="tab" onclick="switchTab('setup')">Setup</button>
-  </div>
+  <ul class="nav nav-tabs" id="mainTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-dashboard">Tableau de bord</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-log">Saisie</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-setup">Déploiement</a></li>
+  </ul>
 
-  <!-- ===== DASHBOARD TAB ===== -->
-  <div class="section active" id="tab-dashboard">
+  <div class="tab-content">
 
-    <div class="metrics" id="metrics"></div>
+    <!-- DASHBOARD -->
+    <div class="tab-pane fade show active" id="tab-dashboard">
+      <div class="row g-3 mb-3" id="metrics"></div>
 
-    <div class="grid2" style="margin-bottom:1rem;">
-
-      <div class="card">
-        <div class="card-title">Budget tanks</div>
-        <div class="tanks-row" id="tanks"></div>
-        <div class="alert" id="alertBanner"></div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <div class="card h-100 p-3">
+            <div class="card-title-mono">Cuves de budget</div>
+            <div class="tanks-row" id="tanks"></div>
+            <div class="alert-workload" id="alertBanner"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100 p-3">
+            <div class="card-title-mono">Heures EF par jour de la semaine</div>
+            <div style="position:relative;height:200px;">
+              <canvas id="dowChart" role="img" aria-label="Heures Expertise Feu par jour de la semaine">Heures EF par jour.</canvas>
+            </div>
+            <div class="split-legend mt-2">
+              <span><span class="swatch" style="background:var(--red);"></span>Mercredi (jour imposé)</span>
+              <span><span class="swatch" style="background:var(--blue);"></span>Autres jours</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">FI hours — day of week</div>
-        <div style="position:relative; height:200px;">
-          <canvas id="dowChart" role="img" aria-label="Bar chart of fire investigation hours per day of week">FI hours by weekday.</canvas>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-title-mono">Répartition officielle — 75 / 25</div>
+            <div class="split-bar" id="bar25"></div>
+            <div class="split-legend mb-3" id="leg25"></div>
+            <div class="card-title-mono">Répartition demandée — 50 / 50</div>
+            <div class="split-bar" id="bar50"></div>
+            <div class="split-legend" id="leg50"></div>
+            <p class="mt-3" style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;" id="splitNote"></p>
+          </div>
         </div>
-        <div class="split-legend" style="margin-top:8px;">
-          <span><span class="swatch" style="background:var(--red);"></span>Wednesday (imposed day)</span>
-          <span><span class="swatch" style="background:var(--blue);"></span>Other days</span>
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-title-mono">Consommation cumulée EF</div>
+            <div style="position:relative;height:200px;">
+              <canvas id="burnChart" role="img" aria-label="Heures Expertise Feu cumulées dans le temps">Heures EF cumulées.</canvas>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Official split — 75 / 25</div>
-        <div class="split-bar" id="bar25"></div>
-        <div class="split-legend" id="leg25"></div>
-        <div style="margin-top:1rem;" class="card-title">Requested split — 50 / 50</div>
-        <div class="split-bar" id="bar50"></div>
-        <div class="split-legend" id="leg50"></div>
-        <p style="margin-top:12px; font-size:11px; color:var(--faint); font-family:'DM Mono',monospace;" id="splitNote"></p>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Weekly burn — cumulative FI hours</div>
-        <div style="position:relative; height:200px;">
-          <canvas id="burnChart" role="img" aria-label="Line chart of cumulative fire investigation hours over time">Cumulative FI hours over time.</canvas>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ===== LOG TAB ===== -->
-  <div class="section" id="tab-log">
-
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Add entry</div>
-        <div class="form-row">
-          <div>
-            <label style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);display:block;margin-bottom:3px;">Date</label>
-            <input type="date" id="entryDate" style="width:140px;">
-          </div>
-          <div>
-            <label style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);display:block;margin-bottom:3px;">Hours (FI)</label>
-            <input type="number" id="entryHours" min="0.5" max="24" step="0.5" style="width:80px;" placeholder="8">
-          </div>
-          <div style="flex:1;">
-            <label style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);display:block;margin-bottom:3px;">Note (optional)</label>
-            <input type="text" id="entryNote" placeholder="Site visit, court, training…" style="width:100%;">
-          </div>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button onclick="addEntry()">Add entry</button>
-          <button class="secondary" onclick="importCSV()">Import CSV</button>
-          <input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="handleCSV(this)">
-          <span class="form-hint">CSV: date (YYYY-MM-DD), hours, note</span>
-        </div>
-
-        <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border);">
-          <div class="card-title" style="margin-bottom:0.5rem;">Configuration <button class="config-toggle" onclick="toggleConfig()">edit</button></div>
-          <div class="config-panel" id="configPanel">
-            <div class="config-grid">
-              <div class="config-field">
-                <label>Budget (hours)</label>
-                <input type="number" id="cfgBudget" value="264" step="8">
+    <!-- SAISIE -->
+    <div class="tab-pane fade" id="tab-log">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <div class="card p-3 mb-3">
+            <div class="card-title-mono">Ajouter une entrée</div>
+            <div class="row g-2 mb-2">
+              <div class="col-auto">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" id="entryDate" style="width:150px;">
               </div>
-              <div class="config-field">
-                <label>Weeks remaining</label>
-                <input type="number" id="cfgWeeks" value="33">
+              <div class="col-auto">
+                <label class="form-label">Heures EF</label>
+                <input type="number" class="form-control" id="entryHours" min="0.5" max="24" step="0.5" style="width:90px;" placeholder="8">
               </div>
-              <div class="config-field">
-                <label>Working days/year</label>
-                <input type="number" id="cfgWorkDays" value="227">
-              </div>
-              <div class="config-field">
-                <label>Weeks elapsed (year)</label>
-                <input type="number" id="cfgWeeksElapsed" value="19">
+              <div class="col">
+                <label class="form-label">Remarque (optionnel)</label>
+                <input type="text" class="form-control" id="entryNote" placeholder="Visite, audience, formation…">
               </div>
             </div>
-            <div style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border);">
-              <label style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);display:block;margin-bottom:4px;">Google Sheets CSV export URL</label>
-              <input type="text" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=0" style="width:100%; font-size:11px;">
-              <p class="form-hint" style="margin-top:4px;">Paste the CSV export URL from your shared Google Sheet. The dashboard will fetch data from it on load.</p>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <button class="btn-dark-mono" onclick="addEntry()">Ajouter</button>
+              <button class="btn-outline-mono" onclick="importCSV()">Importer CSV</button>
+              <input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="handleCSV(this)">
             </div>
-            <button onclick="saveConfig()" style="margin-top:10px;">Save config</button>
+            <div class="mt-1" style="font-size:11px;color:var(--faint);">CSV : date (AAAA-MM-JJ), heures, remarque</div>
+            <div id="syncStatus" style="margin-top:8px;font-size:11px;font-family:'DM Mono',monospace;color:var(--faint);"></div>
+          </div>
+
+          <div class="card p-3">
+            <div class="card-title-mono d-flex justify-content-between align-items-center">
+              Configuration
+              <button class="btn-danger-soft" type="button" data-bs-toggle="collapse" data-bs-target="#configCollapse">modifier</button>
+            </div>
+            <div class="collapse" id="configCollapse">
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <label class="form-label">Budget (heures)</label>
+                  <input type="number" class="form-control" id="cfgBudget" value="264" step="8">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Semaines restantes</label>
+                  <input type="number" class="form-control" id="cfgWeeks" value="33">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Jours ouvrés/an</label>
+                  <input type="number" class="form-control" id="cfgWorkDays" value="227">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Semaines écoulées</label>
+                  <input type="number" class="form-control" id="cfgWeeksElapsed" value="19">
+                </div>
+              </div>
+              <div class="mb-2">
+                <label class="form-label">URL CSV Google Sheets</label>
+                <input type="text" class="form-control" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" style="font-size:11px;">
+              </div>
+              <button class="btn-dark-mono" onclick="saveConfig()">Enregistrer</button>
+            </div>
           </div>
         </div>
 
-        <div id="syncStatus" style="margin-top:8px; font-size:11px; font-family:'DM Mono',monospace; color:var(--faint);"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title" style="justify-content:space-between;">
-          Entry log
-          <button class="danger-btn" onclick="exportCSV()" style="font-size:10px; padding:3px 8px;">Export CSV</button>
+        <div class="col-md-7">
+          <div class="card p-3">
+            <div class="card-title-mono d-flex justify-content-between align-items-center">
+              Journal
+              <button class="btn-danger-soft" onclick="exportCSV()">Exporter CSV</button>
+            </div>
+            <div style="overflow-y:auto;max-height:400px;">
+              <table class="log-table">
+                <thead><tr><th>Date</th><th>Jour</th><th>Heures</th><th>Remarque</th><th></th></tr></thead>
+                <tbody id="logBody"></tbody>
+              </table>
+            </div>
+            <div id="logTotal" style="margin-top:8px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);text-align:right;"></div>
+          </div>
         </div>
-        <div style="overflow-y:auto; max-height:340px;">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Day</th>
-                <th>Hours</th>
-                <th>Note</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="logBody"></tbody>
-          </table>
-        </div>
-        <div id="logTotal" style="margin-top:8px; font-size:12px; font-family:'DM Mono',monospace; color:var(--muted); text-align:right;"></div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== SETUP TAB ===== -->
-  <div class="section" id="tab-setup">
-    <div class="card" style="max-width:680px;">
-      <div class="card-title">Setup guide — share this dashboard</div>
-      <div class="setup-steps">
+    <!-- DÉPLOIEMENT -->
+    <div class="tab-pane fade" id="tab-setup">
+      <div class="card p-4" style="max-width:680px;">
+        <div class="card-title-mono">Guide de déploiement</div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">1</div>
-          <div class="step-content">
-            <div class="step-title">Fork or create a GitHub repository</div>
-            <div class="step-desc">Create a new public repository on GitHub (e.g. <code>fi-workload</code>). Upload <code>index.html</code> as the only file needed. No build step, no dependencies.</div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Créer un dépôt GitHub</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Créez un dépôt public (ex. <code>ef-workload</code>). Déposez <code>index.html</code> comme seul fichier — aucune dépendance, aucune compilation.</div>
           </div>
         </div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">2</div>
-          <div class="step-content">
-            <div class="step-title">Enable GitHub Pages</div>
-            <div class="step-desc">Go to your repo → Settings → Pages → Source: <strong>Deploy from branch</strong> → branch: <code>main</code>, folder: <code>/ (root)</code>. Save. Your URL will be <code>https://yourusername.github.io/fi-workload/</code></div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Activer GitHub Pages</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Dépôt → Settings → Pages → Source : <strong>Deploy from branch</strong> → branche <code>main</code>, dossier <code>/ (root)</code>. URL : <code>https://votre-user.github.io/ef-workload/</code></div>
           </div>
         </div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">3</div>
-          <div class="step-content">
-            <div class="step-title">Create a Google Sheet for your data</div>
-            <div class="step-desc">Create a new Google Sheet. Name the first sheet <code>FI_Log</code>. Set up three columns exactly:<br><br>
-              <code>A: date</code> &nbsp; <code>B: hours</code> &nbsp; <code>C: note</code><br><br>
-              Row 1 = headers. Data starts from row 2. Dates must be formatted as <code>YYYY-MM-DD</code>. You can paste your existing entries directly.
-            </div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Créer une Google Sheet</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Trois colonnes : <code>A: date</code> <code>B: hours</code> <code>C: note</code><br>Ligne 1 = en-têtes. Données à partir de la ligne 2. Format dates : <code>AAAA-MM-JJ</code>.</div>
           </div>
         </div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">4</div>
-          <div class="step-content">
-            <div class="step-title">Publish the Sheet as CSV</div>
-            <div class="step-desc">In your Sheet: File → Share → Publish to web → choose <strong>Sheet 1</strong> → format: <strong>Comma-separated values (.csv)</strong> → Publish. Copy the URL shown — it looks like:<br>
-              <pre>https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=0&single=true&output=csv</pre>
-              This URL is public but obscure — no login required to read it. The Sheet itself stays private in your Drive.
-            </div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Publier en CSV</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Fichier → Partager → Publier sur le web → Feuille 1 → CSV → Publier. Copier l'URL :</div>
+            <pre>https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=0&single=true&output=csv</pre>
           </div>
         </div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">5</div>
-          <div class="step-content">
-            <div class="step-title">Connect the dashboard</div>
-            <div class="step-desc">In this dashboard, go to <strong>Log time → Configuration → edit</strong>. Paste the CSV URL in the "Google Sheets CSV export URL" field. Click Save config. The dashboard will now fetch live data from your Sheet on every load. Viewers just open the GitHub Pages URL — no login needed.</div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Connecter le tableau de bord</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Onglet <strong>Saisie → Configuration → modifier</strong>. Collez l'URL CSV. Enregistrez. Le tableau se met à jour automatiquement à chaque chargement.</div>
           </div>
         </div>
 
-        <div class="setup-step">
+        <div class="d-flex gap-3 align-items-start">
           <div class="step-num">6</div>
-          <div class="step-content">
-            <div class="step-title">Workflow going forward</div>
-            <div class="step-desc">You log entries directly in the Google Sheet (fastest) or via the Log time tab (then export CSV and paste into the Sheet). Anyone with your GitHub Pages URL sees the live dashboard. Data lives entirely in your Google Drive — you can revoke the published CSV link anytime to take it offline.</div>
+          <div>
+            <div style="font-weight:500;margin-bottom:4px;">Workflow quotidien</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Ajoutez les lignes directement dans la Google Sheet après chaque session EF. Tout visiteur avec l'URL GitHub Pages voit les données en temps réel. Révoquez le lien CSV à tout moment pour couper l'accès.</div>
           </div>
         </div>
-
       </div>
     </div>
-  </div>
 
-</main>
+  </div>
+</div>
 
 <script>
-const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 
-let cfg = {
-  budget: 264,
-  weeks: 33,
-  workDays: 227,
-  weeksElapsed: 19,
-  sheetUrl: ''
-};
-
+let cfg = { budget: 264, weeks: 33, workDays: 227, weeksElapsed: 19, sheetUrl: '' };
 let entries = [
-  { date: '2025-01-13', hours: 12, note: 'Week 1 — site visits' },
-  { date: '2025-01-20', hours: 8, note: 'Week 2 (2 days off)' }
+  { date: '2025-01-13', hours: 12, note: 'Semaine 1 — visites de site' },
+  { date: '2025-01-20', hours: 8, note: 'Semaine 2 (2 jours fériés)' }
 ];
 
 function loadStorage() {
@@ -691,7 +319,7 @@ function loadStorage() {
     document.getElementById('cfgWorkDays').value = cfg.workDays;
     document.getElementById('cfgWeeksElapsed').value = cfg.weeksElapsed;
     document.getElementById('cfgSheetUrl').value = cfg.sheetUrl || '';
-  } catch(e) {}
+  } catch(err) {}
 }
 
 function saveStorage() {
@@ -707,13 +335,13 @@ function saveConfig() {
   cfg.sheetUrl = document.getElementById('cfgSheetUrl').value.trim();
   saveStorage();
   renderAll();
-  document.getElementById('syncStatus').textContent = 'Config saved.';
-  setTimeout(() => document.getElementById('syncStatus').textContent = '', 2000);
+  document.getElementById('syncStatus').textContent = 'Configuration enregistrée.';
+  setTimeout(() => document.getElementById('syncStatus').textContent = '', 2500);
 }
 
 async function fetchSheet() {
   if (!cfg.sheetUrl) return;
-  document.getElementById('statusPill').textContent = 'fetching…';
+  document.getElementById('statusPill').textContent = 'actualisation…';
   try {
     const r = await fetch(cfg.sheetUrl);
     const text = await r.text();
@@ -722,176 +350,153 @@ async function fetchSheet() {
     lines.forEach(line => {
       const parts = line.split(',');
       if (parts.length < 2) return;
-      const date = parts[0].trim().replace(/"/g,'');
+      const date = parts[0].trim().replace(/"/g, '');
       const hours = parseFloat(parts[1]);
-      const note = (parts[2] || '').trim().replace(/"/g,'');
+      const note = (parts[2] || '').trim().replace(/"/g, '');
       if (date && !isNaN(hours)) fetched.push({ date, hours, note });
     });
     if (fetched.length > 0) {
       entries = fetched;
       saveStorage();
       renderAll();
-      document.getElementById('statusPill').textContent = 'live';
-      document.getElementById('statusPill').style.background = '#e8f5f2';
-      document.getElementById('statusPill').style.color = '#0d6b5a';
-      document.getElementById('lastUpdated').textContent = 'fetched ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+      const pill = document.getElementById('statusPill');
+      pill.textContent = 'en direct';
+      pill.style.cssText += ';background:#e8f5f2;color:#0d6b5a;border-color:rgba(13,107,90,0.2);';
+      document.getElementById('lastUpdated').textContent =
+        'mis à jour ' + new Date().toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
     }
   } catch(err) {
-    document.getElementById('statusPill').textContent = 'offline';
-    document.getElementById('statusPill').style.background = '#fdf3e3';
-    document.getElementById('statusPill').style.color = '#a05c00';
-    console.warn('Sheet fetch failed:', err);
+    const pill = document.getElementById('statusPill');
+    pill.textContent = 'hors ligne';
+    pill.style.cssText += ';background:#fdf3e3;color:#a05c00;';
   }
 }
 
-function totalHours() { return entries.reduce((s,e)=>s+e.hours,0); }
+function totalHours() { return entries.reduce((s, e) => s + e.hours, 0); }
 
-function dowCounts() {
-  const c = [0,0,0,0,0,0,0];
-  entries.forEach(e => {
-    const d = new Date(e.date + 'T12:00:00').getDay();
-    c[d] += e.hours;
-  });
-  return c;
-}
-
-function burnSeries() {
-  const sorted = [...entries].sort((a,b)=>a.date.localeCompare(b.date));
-  let cum = 0;
-  return sorted.map(e => { cum += e.hours; return { date: e.date, cum }; });
+function burnStats() {
+  const used = totalHours();
+  const rem = cfg.budget - used;
+  const sortedDates = [...entries].map(e => e.date).sort();
+  let weeksSpanned = 1;
+  if (sortedDates.length >= 2) {
+    const first = new Date(sortedDates[0] + 'T12:00:00');
+    const last  = new Date(sortedDates[sortedDates.length - 1] + 'T12:00:00');
+    weeksSpanned = Math.max(1, Math.round((last - first) / (7 * 86400000)) + 1);
+  }
+  const burnPerWeek = used / weeksSpanned;
+  const weeksToEmpty = burnPerWeek > 0 ? rem / burnPerWeek : Infinity;
+  const projDate = isFinite(weeksToEmpty)
+    ? new Date(Date.now() + weeksToEmpty * 7 * 86400000) : null;
+  return { used, rem, burnPerWeek, weeksToEmpty, projDate };
 }
 
 function renderMetrics() {
-  const used = totalHours();
-  const rem = cfg.budget - used;
-  const weeksData = entries.length >= 1 ? 2 : 1;
-  const burnPerWeek = used / weeksData;
-  const weeksToEmpty = burnPerWeek > 0 ? rem / burnPerWeek : Infinity;
-  const projDate = new Date(Date.now() + weeksToEmpty * 7 * 86400000);
-  const projStr = isFinite(weeksToEmpty)
-    ? projDate.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
-    : '—';
-
+  const { used, rem, burnPerWeek, weeksToEmpty, projDate } = burnStats();
   const pctUsed = Math.round(used / cfg.budget * 100);
+  const projStr = projDate
+    ? projDate.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
 
   document.getElementById('metrics').innerHTML = [
-    { label: 'budget remaining', value: Math.round(rem) + 'h', sub: `of ${cfg.budget}h annual`, cls: rem < 100 ? 'red' : '' },
-    { label: 'consumed', value: pctUsed + '%', sub: `${Math.round(used)}h logged`, cls: pctUsed > 40 ? (pctUsed > 70 ? 'red' : 'amber') : '' },
-    { label: 'burn rate', value: Math.round(burnPerWeek) + 'h/wk', sub: 'current avg', cls: 'amber' },
-    { label: 'budget depleted', value: projStr, sub: 'projected at current rate', cls: 'red' }
+    { label: 'budget restant', value: Math.round(rem) + 'h', sub: `sur ${cfg.budget}h alloués`, cls: rem < 80 ? 'red' : '' },
+    { label: 'consommé', value: pctUsed + '%', sub: `${Math.round(used)}h enregistrées`, cls: pctUsed > 40 ? (pctUsed > 70 ? 'red' : 'amber') : '' },
+    { label: 'rythme actuel', value: (Math.round(burnPerWeek * 10) / 10) + 'h/sem', sub: 'moyenne observée', cls: 'amber' },
+    { label: 'budget épuisé le', value: projStr, sub: 'projection au rythme actuel', cls: 'red' }
   ].map(m => `
-    <div class="metric">
-      <div class="metric-label">${m.label}</div>
-      <div class="metric-value ${m.cls}" style="font-size:${m.value.length > 9 ? '15px' : '22px'}">${m.value}</div>
-      <div class="metric-sub">${m.sub}</div>
+    <div class="col-6 col-md-3">
+      <div class="metric-card">
+        <div class="metric-label">${m.label}</div>
+        <div class="metric-value ${m.cls}" style="font-size:${m.value.length > 10 ? '15px' : '22px'}">${m.value}</div>
+        <div class="metric-sub">${m.sub}</div>
+      </div>
     </div>`).join('');
 }
 
 function renderTanks() {
-  const used = totalHours();
-  const usedPct = Math.min(used / cfg.budget * 100, 100);
+  const { used, weeksToEmpty, projDate } = burnStats();
+  const usedPct  = Math.min(used / cfg.budget * 100, 100);
   const budget50 = cfg.budget * 2;
   const usedPct50 = Math.min(used / budget50 * 100, 100);
-  const yearPct = cfg.weeksElapsed / 52 * 100;
+  const yearPct  = cfg.weeksElapsed / 52 * 100;
 
   function tankHTML(label, usedP, color, totalH) {
-    return `
-      <div class="tank-col">
-        <div class="tank-outer">
-          <div class="tank-fill" style="height:${usedP.toFixed(1)}%; background:${color};"></div>
-          <div class="tank-year-line" style="bottom:${(100-yearPct).toFixed(1)}%;">
-            <span class="tank-year-label">wk ${cfg.weeksElapsed}/52</span>
-          </div>
-          ${usedP > 8 ? `<div class="tank-pct">${Math.round(usedP)}%</div>` : ''}
+    return `<div class="tank-col">
+      <div class="tank-outer">
+        <div class="tank-fill" style="height:${usedP.toFixed(1)}%;background:${color};"></div>
+        <div class="tank-year-line" style="bottom:${(100-yearPct).toFixed(1)}%;">
+          <span class="tank-year-label">sem. ${cfg.weeksElapsed}/52</span>
         </div>
-        <div class="tank-name">${label}<br><span style="color:var(--faint);font-size:9px;">${totalH}h budget</span></div>
-      </div>`;
+        ${usedP > 8 ? `<div class="tank-pct">${Math.round(usedP)}%</div>` : ''}
+      </div>
+      <div class="tank-name">${label}<br><span style="color:var(--faint);font-size:9px;">${totalH}h budget</span></div>
+    </div>`;
   }
 
   document.getElementById('tanks').innerHTML =
-    tankHTML('official 25%', usedPct, '#c0392b', cfg.budget) +
-    tankHTML('needed 50%', usedPct50, '#0d6b5a', budget50);
+    tankHTML('officiel 25%', usedPct, '#c0392b', cfg.budget) +
+    tankHTML('nécessaire 50%', usedPct50, '#0d6b5a', budget50);
 
-  const used2 = totalHours();
-  const burnPerWeek = used2 / 2;
-  const rem = cfg.budget - used2;
-  const weeksToEmpty = burnPerWeek > 0 ? rem / burnPerWeek : Infinity;
-  const projDate = new Date(Date.now() + weeksToEmpty * 7 * 86400000);
-  const projStr = isFinite(weeksToEmpty)
-    ? projDate.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
-    : 'unknown';
+  // Dynamic alert — calculates weeks remaining in year after budget exhaustion
+  const projStr = projDate
+    ? projDate.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' })
+    : 'une date indéterminée';
 
-  document.getElementById('alertBanner').innerHTML =
-    `⚠ At current rate, the 25% budget is <strong>exhausted by ${projStr}</strong> — ${Math.round(cfg.weeks)} weeks before year-end. The 50% tank shows what a fair allocation would look like.`;
+  let alertText = `⚠ Au rythme actuel, le budget officiel 25% sera <strong>épuisé le ${projStr}</strong>`;
+  if (isFinite(weeksToEmpty)) {
+    const weeksAfterEmpty = Math.round(cfg.weeks - weeksToEmpty);
+    if (weeksAfterEmpty > 0) {
+      alertText += ` — soit <strong>${weeksAfterEmpty} semaine(s) avant la fin de l'année</strong>.`;
+    } else {
+      alertText += ` — dans environ ${Math.round(weeksToEmpty)} semaine(s).`;
+    }
+  } else {
+    alertText += '.';
+  }
+  alertText += ' La cuve 50% illustre ce qu\'une répartition équitable représenterait.';
+  document.getElementById('alertBanner').innerHTML = alertText;
 }
 
 let dowChart = null, burnChart = null;
 
 function renderDow() {
-  const counts = dowCounts();
-  const labels = ['Mon','Tue','Wed','Thu','Fri'];
-  const data = [1,2,3,4,5].map(i=>counts[i]);
-  const colors = labels.map(l => l==='Wed' ? '#c0392b' : '#1a4f7a');
+  const counts = [0,0,0,0,0,0,0];
+  entries.forEach(e => { counts[new Date(e.date + 'T12:00:00').getDay()] += e.hours; });
+  const labels = ['Lun','Mar','Mer','Jeu','Ven'];
+  const data = [1,2,3,4,5].map(i => counts[i]);
+  const colors = labels.map(l => l === 'Mer' ? '#c0392b' : '#1a4f7a');
 
   if (dowChart) dowChart.destroy();
   dowChart = new Chart(document.getElementById('dowChart'), {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors,
-        borderRadius: 4,
-        borderSkipped: false,
-      }]
-    },
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + 'h FI' } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + 'h EF' } } },
       scales: {
-        x: { ticks: { color: '#7a7870', font: { size:12, family:"'DM Mono', monospace" } }, grid: { display:false } },
-        y: { ticks: { color: '#7a7870', font: { size:11, family:"'DM Mono', monospace" }, callback: v=>v+'h' }, grid: { color:'rgba(0,0,0,0.05)' } }
+        x: { ticks: { color: '#7a7870', font: { size: 12, family: "'DM Mono', monospace" } }, grid: { display: false } },
+        y: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" }, callback: v => v + 'h' }, grid: { color: 'rgba(0,0,0,0.05)' } }
       }
     }
   });
 }
 
 function renderBurn() {
-  const series = burnSeries();
+  const sorted = [...entries].sort((a,b) => a.date.localeCompare(b.date));
   if (burnChart) burnChart.destroy();
-  if (series.length === 0) return;
-
-  const labels = series.map(s => {
-    const d = new Date(s.date + 'T12:00:00');
-    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
-  });
-  const data = series.map(s => s.cum);
+  if (!sorted.length) return;
+  let cum = 0;
+  const labels = sorted.map(e => new Date(e.date+'T12:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'short'}));
+  const data = sorted.map(e => { cum += e.hours; return cum; });
 
   burnChart = new Chart(document.getElementById('burnChart'), {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        borderColor: '#c0392b',
-        backgroundColor: 'rgba(192,57,43,0.07)',
-        fill: true,
-        tension: 0.3,
-        pointRadius: 5,
-        pointBackgroundColor: '#c0392b',
-        borderWidth: 2,
-      }]
-    },
+    data: { labels, datasets: [{ data, borderColor: '#c0392b', backgroundColor: 'rgba(192,57,43,0.07)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#c0392b', borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display:false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + 'h cumulative' } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + 'h cumulé' } } },
       scales: {
-        x: { ticks: { color:'#7a7870', font:{ size:11, family:"'DM Mono', monospace" } }, grid:{ display:false } },
-        y: {
-          ticks: { color:'#7a7870', font:{size:11, family:"'DM Mono', monospace"}, callback: v=>v+'h' },
-          grid: { color:'rgba(0,0,0,0.05)' },
-          max: cfg.budget
-        }
+        x: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" } }, grid: { display: false } },
+        y: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" }, callback: v => v + 'h' }, grid: { color: 'rgba(0,0,0,0.05)' }, max: cfg.budget }
       }
     }
   });
@@ -901,42 +506,42 @@ function renderSplitBars() {
   const fi25 = Math.round(cfg.workDays * 0.25);
   const ur25 = cfg.workDays - fi25;
   const fi50 = Math.round(cfg.workDays * 0.5);
-  const ur50 = cfg.workDays - fi50;
 
   document.getElementById('bar25').innerHTML = `
-    <div class="split-seg" style="width:75%;background:var(--blue);color:#eef3f8;">UR 75% (${ur25}d)</div>
-    <div class="split-seg" style="width:25%;background:var(--red);color:#fdf0ee;">FI 25% (${fi25}d)</div>`;
+    <div class="split-seg" style="width:75%;background:var(--blue);color:#eef3f8;">RSS 75% (${ur25}j)</div>
+    <div class="split-seg" style="width:25%;background:var(--red);color:#fdf0ee;">EF 25% (${fi25}j)</div>`;
   document.getElementById('leg25').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Underground risks: ${ur25} days</span>
-    <span><span class="swatch" style="background:var(--red);"></span>Fire investigation: ${fi25} days</span>`;
+    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol : ${ur25} jours</span>
+    <span><span class="swatch" style="background:var(--red);"></span>Expertise Feu : ${fi25} jours</span>`;
 
   document.getElementById('bar50').innerHTML = `
-    <div class="split-seg" style="width:50%;background:var(--blue);color:#eef3f8;">UR 50%</div>
-    <div class="split-seg" style="width:50%;background:var(--teal);color:#e8f5f2;">FI 50% (${fi50}d)</div>`;
+    <div class="split-seg" style="width:50%;background:var(--blue);color:#eef3f8;">RSS 50%</div>
+    <div class="split-seg" style="width:50%;background:var(--teal);color:#e8f5f2;">EF 50% (${fi50}j)</div>`;
   document.getElementById('leg50').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Underground risks: ${fi50} days</span>
-    <span><span class="swatch" style="background:var(--teal);"></span>Fire investigation: ${fi50} days</span>`;
+    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol : ${fi50} jours</span>
+    <span><span class="swatch" style="background:var(--teal);"></span>Expertise Feu : ${fi50} jours</span>`;
 
   document.getElementById('splitNote').textContent =
-    `At 50/50, you would have ${fi50} days for FI — ${fi50 - fi25} more than currently allocated.`;
+    `À 50/50, vous disposeriez de ${fi50} jours pour l'EF — soit ${fi50 - fi25} jours de plus qu'actuellement.`;
 }
 
 function renderLog() {
-  const sorted = [...entries].sort((a,b)=>b.date.localeCompare(a.date));
-  document.getElementById('logBody').innerHTML = sorted.map((e,i) => {
+  const sorted = [...entries].sort((a,b) => b.date.localeCompare(a.date));
+  document.getElementById('logBody').innerHTML = sorted.map(e => {
     const d = new Date(e.date + 'T12:00:00');
-    const dow = DAYS[d.getDay()];
-    const isWed = dow === 'Wed';
+    const dow = DAYS_FR[d.getDay()];
+    const isMer = dow === 'Mer';
     return `<tr>
-      <td style="font-family:'DM Mono',monospace;">${d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td><span class="badge ${isWed?'badge-wed':'badge-other'}">${dow}</span></td>
+      <td style="font-family:'DM Mono',monospace;">${d.toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td><span class="badge rounded-pill ${isMer?'badge-wed':'badge-other'}">${dow}</span></td>
       <td style="font-family:'DM Mono',monospace;">${e.hours}h</td>
       <td style="color:var(--muted);">${e.note||'—'}</td>
-      <td><button class="danger-btn" style="padding:2px 8px;font-size:10px;" onclick="delEntry('${e.date}',${e.hours})">×</button></td>
+      <td><button class="btn-del" onclick="delEntry('${e.date}',${e.hours})">×</button></td>
     </tr>`;
   }).join('');
   const total = totalHours();
-  document.getElementById('logTotal').textContent = `Total: ${total}h — ${Math.round(total/8 * 10)/10} days`;
+  document.getElementById('logTotal').textContent =
+    `Total : ${total}h — ${Math.round(total / 8 * 10) / 10} jours`;
 }
 
 function addEntry() {
@@ -944,7 +549,7 @@ function addEntry() {
   const hours = parseFloat(document.getElementById('entryHours').value);
   const note = document.getElementById('entryNote').value.trim();
   if (!date || !hours || hours <= 0) {
-    document.getElementById('syncStatus').textContent = 'Fill in date and hours.';
+    document.getElementById('syncStatus').textContent = 'Veuillez renseigner la date et les heures.';
     return;
   }
   entries.push({ date, hours, note });
@@ -952,21 +557,23 @@ function addEntry() {
   document.getElementById('entryHours').value = '';
   document.getElementById('entryNote').value = '';
   renderAll();
-  document.getElementById('syncStatus').textContent = 'Entry added. Remember to also update your Google Sheet.';
+  document.getElementById('syncStatus').textContent = 'Entrée ajoutée. Pensez à mettre à jour votre Google Sheet.';
   setTimeout(() => document.getElementById('syncStatus').textContent = '', 4000);
 }
 
 function delEntry(date, hours) {
-  const idx = entries.findIndex(e => e.date===date && e.hours===hours);
-  if (idx > -1) { entries.splice(idx,1); saveStorage(); renderAll(); }
+  const idx = entries.findIndex(e => e.date === date && e.hours === hours);
+  if (idx > -1) { entries.splice(idx, 1); saveStorage(); renderAll(); }
 }
 
 function exportCSV() {
-  const rows = ['date,hours,note', ...entries.sort((a,b)=>a.date.localeCompare(b.date)).map(e=>`${e.date},${e.hours},"${e.note||''}"`)];
-  const blob = new Blob([rows.join('\n')], { type:'text/csv' });
+  const rows = ['date,hours,note',
+    ...entries.sort((a,b) => a.date.localeCompare(b.date)).map(e => `${e.date},${e.hours},"${e.note||''}"`)
+  ];
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'fi_log.csv';
+  a.download = 'ef_log.csv';
   a.click();
 }
 
@@ -976,8 +583,8 @@ function handleCSV(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    const lines = e.target.result.trim().split('\n');
+  reader.onload = ev => {
+    const lines = ev.target.result.trim().split('\n');
     const imported = [];
     lines.forEach((line, i) => {
       if (i === 0 && line.toLowerCase().startsWith('date')) return;
@@ -989,47 +596,22 @@ function handleCSV(input) {
       if (date && !isNaN(hours)) imported.push({ date, hours, note });
     });
     if (imported.length) {
-      entries = imported;
-      saveStorage();
-      renderAll();
-      document.getElementById('syncStatus').textContent = `Imported ${imported.length} entries.`;
+      entries = imported; saveStorage(); renderAll();
+      document.getElementById('syncStatus').textContent = `${imported.length} entrées importées.`;
     }
   };
   reader.readAsText(file);
 }
 
-function toggleConfig() {
-  document.getElementById('configPanel').classList.toggle('open');
-}
-
-function switchTab(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-}
-
 function renderAll() {
-  renderMetrics();
-  renderTanks();
-  renderDow();
-  renderBurn();
-  renderSplitBars();
-  renderLog();
+  renderMetrics(); renderTanks(); renderDow(); renderBurn(); renderSplitBars(); renderLog();
 }
 
 loadStorage();
 renderAll();
-
-const today = new Date().toISOString().split('T')[0];
-document.getElementById('entryDate').value = today;
-document.getElementById('statusPill').textContent = 'local';
-
-if (cfg.sheetUrl) {
-  fetchSheet();
-} else {
-  document.getElementById('statusPill').textContent = 'no sheet';
-}
+document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('statusPill').textContent = cfg.sheetUrl ? 'local' : 'pas de sheet';
+if (cfg.sheetUrl) fetchSheet();
 </script>
 </body>
 </html>
