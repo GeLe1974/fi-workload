@@ -213,10 +213,7 @@
                   <input type="number" class="form-control" id="cfgWeeksElapsed" value="19">
                 </div>
               </div>
-              <div class="mb-2">
-                <label class="form-label">URL CSV Google Sheets</label>
-                <input type="text" class="form-control" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" style="font-size:11px;">
-              </div>
+
               <button class="btn-dark-mono" onclick="saveConfig()">Enregistrer</button>
             </div>
           </div>
@@ -302,7 +299,8 @@
 <script>
 const DAYS_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 
-let cfg = { budget: 264, weeks: 33, workDays: 227, weeksElapsed: 19, sheetUrl: '' };
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7RJrJC9PQCTOGexmxnSCcWon8lX2-R_o40EUpMJltmNJoMnvsXMw_lJVoOMkiKMxWOcw5KTpe5At6/pub?gid=0&single=true&output=csv';
+let cfg = { budget: 264, weeks: 33, workDays: 227, weeksElapsed: 19, sheetUrl: SHEET_URL };
 let entries = [
   { date: '2025-01-13', hours: 12, note: 'Semaine 1 — visites de site' },
   { date: '2025-01-20', hours: 8, note: 'Semaine 2 (2 jours fériés)' }
@@ -318,7 +316,7 @@ function loadStorage() {
     document.getElementById('cfgWeeks').value = cfg.weeks;
     document.getElementById('cfgWorkDays').value = cfg.workDays;
     document.getElementById('cfgWeeksElapsed').value = cfg.weeksElapsed;
-    document.getElementById('cfgSheetUrl').value = cfg.sheetUrl || '';
+
   } catch(err) {}
 }
 
@@ -332,7 +330,7 @@ function saveConfig() {
   cfg.weeks = parseInt(document.getElementById('cfgWeeks').value) || 33;
   cfg.workDays = parseInt(document.getElementById('cfgWorkDays').value) || 227;
   cfg.weeksElapsed = parseInt(document.getElementById('cfgWeeksElapsed').value) || 19;
-  cfg.sheetUrl = document.getElementById('cfgSheetUrl').value.trim();
+
   saveStorage();
   renderAll();
   document.getElementById('syncStatus').textContent = 'Configuration enregistrée.';
@@ -610,8 +608,7 @@ function renderAll() {
 loadStorage();
 renderAll();
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
-document.getElementById('statusPill').textContent = cfg.sheetUrl ? 'local' : 'pas de sheet';
-if (cfg.sheetUrl) fetchSheet();
+fetchSheet();
 </script>
 </body>
 </html>
