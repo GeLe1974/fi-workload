@@ -138,7 +138,13 @@
       </div>
 
       <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-md-4">
+          <div class="card p-3 h-100">
+            <div class="card-title-mono">Calcul du budget EF</div>
+            <div id="budgetBreakdown"></div>
+          </div>
+        </div>
+        <div class="col-md-4">
           <div class="card p-3">
             <div class="card-title-mono">Répartition officielle — 75 / 25</div>
             <div class="split-bar" id="bar25"></div>
@@ -149,7 +155,7 @@
             <p class="mt-3" style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;" id="splitNote"></p>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div class="card p-3">
             <div class="card-title-mono">Consommation cumulée EF</div>
             <div style="position:relative;height:200px;">
@@ -195,25 +201,43 @@
               <button class="btn-danger-soft" type="button" data-bs-toggle="collapse" data-bs-target="#configCollapse">modifier</button>
             </div>
             <div class="collapse" id="configCollapse">
-              <div class="row g-2 mb-2">
-                <div class="col-6">
-                  <label class="form-label">Budget (heures)</label>
-                  <input type="number" class="form-control" id="cfgBudget" value="264" step="8">
-                </div>
+              <div style="font-size:11px;color:var(--faint);margin-bottom:8px;">Le budget EF est calculé automatiquement à partir de ces paramètres.</div>
+              <div class="row g-2 mb-3">
                 <div class="col-6">
                   <label class="form-label">Semaines restantes</label>
                   <input type="number" class="form-control" id="cfgWeeks" value="33">
                 </div>
                 <div class="col-6">
-                  <label class="form-label">Jours ouvrés/an</label>
-                  <input type="number" class="form-control" id="cfgWorkDays" value="227">
-                </div>
-                <div class="col-6">
                   <label class="form-label">Semaines écoulées</label>
                   <input type="number" class="form-control" id="cfgWeeksElapsed" value="19">
                 </div>
+                <div class="col-6">
+                  <label class="form-label">Jours ouvrés/semaine</label>
+                  <input type="number" class="form-control" id="cfgDaysPerWeek" value="4" min="1" max="5">
+                </div>
               </div>
-
+              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Déductions communes (EF + RSS)</div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label">Jours fériés restants</label>
+                  <input type="number" class="form-control" id="cfgHolidays" value="5">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Maladie estimée (jours)</label>
+                  <input type="number" class="form-control" id="cfgIllness" value="3">
+                </div>
+              </div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Déductions RSS uniquement</div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label">Formation (jours)</label>
+                  <input type="number" class="form-control" id="cfgTraining" value="3">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Récup. heures sup. (jours)</label>
+                  <input type="number" class="form-control" id="cfgOvertime" value="10">
+                </div>
+              </div>
               <button class="btn-dark-mono" onclick="saveConfig()">Enregistrer</button>
             </div>
           </div>
@@ -300,7 +324,42 @@
 const DAYS_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7RJrJC9PQCTOGexmxnSCcWon8lX2-R_o40EUpMJltmNJoMnvsXMw_lJVoOMkiKMxWOcw5KTpe5At6/pub?gid=0&single=true&output=csv';
-let cfg = { budget: 264, weeks: 33, workDays: 227, weeksElapsed: 19, sheetUrl: SHEET_URL };
+
+// Budget parameters — edit these when the situation changes
+const PARAMS = {
+  weeksLeft:        33,   // working weeks remaining in year
+  weeksElapsed:     19,   // weeks already elapsed this year
+  daysPerWeek:       4,   // 5 minus 1 personal holiday day per week
+  publicHolidays:    5,   // days — shared, off the top
+  illnessEstimate:   3,   // days — shared, off the top
+  rssTraining:       3,   // days — RSS only (you're excluded)
+  rssOvertime:      10,   // days — RSS only (generated there)
+  splitEF:        0.25,   // official EF share
+  splitEF50:      0.50,   // requested EF share
+  hoursPerDay:       8,
+};
+
+function calcBudget(split) {
+  const gross        = PARAMS.weeksLeft * PARAMS.daysPerWeek;
+  const sharedDeduct = PARAMS.publicHolidays + PARAMS.illnessEstimate;
+  const netPool      = gross - sharedDeduct;
+  const efDays       = netPool * split;
+  const rssDays      = netPool * (1 - split) - PARAMS.rssTraining - PARAMS.rssOvertime;
+  return {
+    gross, sharedDeduct, netPool,
+    efDays, rssDays,
+    efHours: efDays * PARAMS.hoursPerDay,
+    rssHours: rssDays * PARAMS.hoursPerDay,
+  };
+}
+
+let cfg = {
+  weeks: PARAMS.weeksLeft,
+  weeksElapsed: PARAMS.weeksElapsed,
+  get budget() { return calcBudget(PARAMS.splitEF).efHours; },
+  get workDays() { return calcBudget(PARAMS.splitEF).netPool; },
+  sheetUrl: SHEET_URL
+};
 let entries = [
   { date: '2025-01-13', hours: 12, note: 'Semaine 1 — visites de site' },
   { date: '2025-01-20', hours: 8, note: 'Semaine 2 (2 jours fériés)' }
@@ -312,10 +371,13 @@ function loadStorage() {
     if (c) cfg = { ...cfg, ...JSON.parse(c) };
     const e = localStorage.getItem('fi_entries');
     if (e) entries = JSON.parse(e);
-    document.getElementById('cfgBudget').value = cfg.budget;
-    document.getElementById('cfgWeeks').value = cfg.weeks;
-    document.getElementById('cfgWorkDays').value = cfg.workDays;
-    document.getElementById('cfgWeeksElapsed').value = cfg.weeksElapsed;
+    document.getElementById('cfgWeeks').value        = PARAMS.weeksLeft;
+    document.getElementById('cfgWeeksElapsed').value  = PARAMS.weeksElapsed;
+    document.getElementById('cfgDaysPerWeek').value   = PARAMS.daysPerWeek;
+    document.getElementById('cfgHolidays').value      = PARAMS.publicHolidays;
+    document.getElementById('cfgIllness').value       = PARAMS.illnessEstimate;
+    document.getElementById('cfgTraining').value      = PARAMS.rssTraining;
+    document.getElementById('cfgOvertime').value      = PARAMS.rssOvertime;
 
   } catch(err) {}
 }
@@ -326,11 +388,15 @@ function saveStorage() {
 }
 
 function saveConfig() {
-  cfg.budget = parseFloat(document.getElementById('cfgBudget').value) || 264;
-  cfg.weeks = parseInt(document.getElementById('cfgWeeks').value) || 33;
-  cfg.workDays = parseInt(document.getElementById('cfgWorkDays').value) || 227;
-  cfg.weeksElapsed = parseInt(document.getElementById('cfgWeeksElapsed').value) || 19;
-
+  PARAMS.weeksLeft        = parseInt(document.getElementById('cfgWeeks').value)        || 33;
+  PARAMS.weeksElapsed     = parseInt(document.getElementById('cfgWeeksElapsed').value) || 19;
+  PARAMS.daysPerWeek      = parseInt(document.getElementById('cfgDaysPerWeek').value)  || 4;
+  PARAMS.publicHolidays   = parseInt(document.getElementById('cfgHolidays').value)     || 5;
+  PARAMS.illnessEstimate  = parseInt(document.getElementById('cfgIllness').value)      || 3;
+  PARAMS.rssTraining      = parseInt(document.getElementById('cfgTraining').value)     || 3;
+  PARAMS.rssOvertime      = parseInt(document.getElementById('cfgOvertime').value)     || 10;
+  cfg.weeks        = PARAMS.weeksLeft;
+  cfg.weeksElapsed = PARAMS.weeksElapsed;
   saveStorage();
   renderAll();
   document.getElementById('syncStatus').textContent = 'Configuration enregistrée.';
@@ -500,27 +566,63 @@ function renderBurn() {
   });
 }
 
+function renderBudgetBreakdown() {
+  const b25 = calcBudget(PARAMS.splitEF);
+  const b50 = calcBudget(PARAMS.splitEF50);
+
+  function row(label, value, sub, color) {
+    return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:12px;color:${color||'var(--text)'};">${label}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:${color||'var(--text)'};">${value}${sub?`<span style="font-size:10px;color:var(--faint);margin-left:4px;">${sub}</span>`:''}
+      </span></div>`;
+  }
+
+  document.getElementById('budgetBreakdown').innerHTML = `
+    ${row('Semaines × 4j (−1 congé/sem.)', `${PARAMS.weeksLeft} × ${PARAMS.daysPerWeek} = ${b25.gross}j`)}
+    ${row('− Jours fériés', `−${PARAMS.publicHolidays}j`, 'commun', 'var(--muted)')}
+    ${row('− Maladie estimée', `−${PARAMS.illnessEstimate}j`, 'commun', 'var(--muted)')}
+    ${row('Pool net disponible', `${b25.netPool}j`, '', 'var(--blue)')}
+    <div style="height:6px;"></div>
+    ${row('EF à 25% du pool', `${b25.efDays.toFixed(1)}j`)}
+    ${row('RSS à 75% du pool', `${(b25.netPool*0.75).toFixed(1)}j`, '', 'var(--muted)')}
+    ${row('− Formation RSS', `−${PARAMS.rssTraining}j`, 'RSS seul', 'var(--muted)')}
+    ${row('− Récup. heures sup.', `−${PARAMS.rssOvertime}j`, 'RSS seul', 'var(--muted)')}
+    ${row('RSS net effectif', `${b25.rssDays.toFixed(1)}j`, '', 'var(--muted)')}
+    <div style="height:6px;"></div>
+    <div style="background:var(--red-light);border-left:3px solid var(--red);border-radius:4px;padding:8px 10px;margin-top:4px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:.06em;">Budget EF officiel (25%)</div>
+      <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--red);">${Math.round(b25.efHours)}h <span style="font-size:13px;">${b25.efDays.toFixed(1)}j</span></div>
+    </div>
+    <div style="background:var(--teal-light);border-left:3px solid var(--teal);border-radius:4px;padding:8px 10px;margin-top:6px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;">Budget EF demandé (50%)</div>
+      <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--teal);">${Math.round(b50.efHours)}h <span style="font-size:13px;">${b50.efDays.toFixed(1)}j</span></div>
+    </div>`;
+}
+
 function renderSplitBars() {
-  const fi25 = Math.round(cfg.workDays * 0.25);
-  const ur25 = cfg.workDays - fi25;
-  const fi50 = Math.round(cfg.workDays * 0.5);
+  const b25 = calcBudget(PARAMS.splitEF);
+  const b50 = calcBudget(PARAMS.splitEF50);
+  const fi25 = Math.round(b25.efDays);
+  const ur25 = Math.round(b25.rssDays);
+  const fi50 = Math.round(b50.efDays);
+  const ur50 = Math.round(b50.rssDays);
 
   document.getElementById('bar25').innerHTML = `
     <div class="split-seg" style="width:75%;background:var(--blue);color:#eef3f8;">RSS 75% (${ur25}j)</div>
     <div class="split-seg" style="width:25%;background:var(--red);color:#fdf0ee;">EF 25% (${fi25}j)</div>`;
   document.getElementById('leg25').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol : ${ur25} jours</span>
+    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol net : ${ur25} jours</span>
     <span><span class="swatch" style="background:var(--red);"></span>Expertise Feu : ${fi25} jours</span>`;
 
   document.getElementById('bar50').innerHTML = `
     <div class="split-seg" style="width:50%;background:var(--blue);color:#eef3f8;">RSS 50%</div>
     <div class="split-seg" style="width:50%;background:var(--teal);color:#e8f5f2;">EF 50% (${fi50}j)</div>`;
   document.getElementById('leg50').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol : ${fi50} jours</span>
+    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol net : ${ur50} jours</span>
     <span><span class="swatch" style="background:var(--teal);"></span>Expertise Feu : ${fi50} jours</span>`;
 
   document.getElementById('splitNote').textContent =
-    `À 50/50, vous disposeriez de ${fi50} jours pour l'EF — soit ${fi50 - fi25} jours de plus qu'actuellement.`;
+    `À 50/50 : +${fi50 - fi25} jours EF. RSS passe de ${ur25}j à ${ur50}j net (hors formations et récup.).`;
 }
 
 function renderLog() {
@@ -602,7 +704,7 @@ function handleCSV(input) {
 }
 
 function renderAll() {
-  renderMetrics(); renderTanks(); renderDow(); renderBurn(); renderSplitBars(); renderLog();
+  renderMetrics(); renderTanks(); renderDow(); renderBurn(); renderBudgetBreakdown(); renderSplitBars(); renderLog();
 }
 
 loadStorage();
