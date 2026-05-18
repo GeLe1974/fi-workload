@@ -4,106 +4,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Expertise Feu — Charge de travail ISSeP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.09);
-    --text: #1a1a18;
-    --muted: #7a7870;
-    --faint: #b0aea8;
-    --red: #c0392b;
-    --red-light: #fdf0ee;
-    --blue: #1a4f7a;
-    --blue-light: #eef3f8;
-    --teal: #0d6b5a;
-    --teal-light: #e8f5f2;
-    --amber: #a05c00;
+  body { background: #f8f9fa; }
+
+  /* Navbar */
+  .navbar { border-bottom: 1px solid #dee2e6; }
+
+  /* Status pill */
+  .status-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+
+  /* Jumbotron */
+  .jumbotron {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    min-height: 280px;
+    display: flex;
+    align-items: flex-end;
   }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  .jumbotron img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .jumbotron-overlay {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 70%, transparent 100%);
+  }
 
-  .navbar { background: var(--surface) !important; border-bottom: 1px solid var(--border); height: 56px; padding: 0 1.5rem; }
-  .navbar-brand { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; color: var(--text) !important; display: flex; align-items: center; gap: 10px; }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); display: inline-block; }
+  /* Metric cards */
+  .metric-label { font-size: 11px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
+  .metric-sub { font-size: 11px; color: #adb5bd; }
 
-  .nav-tabs { border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-  .nav-tabs .nav-link { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); border: none; padding: 8px 16px; border-bottom: 2px solid transparent; border-radius: 0; }
-  .nav-tabs .nav-link.active { color: var(--text); background: none; border-bottom: 2px solid var(--text); }
-  .nav-tabs .nav-link:hover { color: var(--text); border-color: transparent; }
-
-  .card { background: var(--surface); border: 1px solid var(--border) !important; border-radius: 10px !important; }
-  .card-title-mono { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
-
-  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
-  .metric-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 6px; }
-  .metric-value { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 4px; color: var(--text); }
-  .metric-value.red { color: var(--red); }
-  .metric-value.amber { color: var(--amber); }
-  .metric-sub { font-size: 11px; color: var(--faint); }
-
+  /* Tanks */
   .tanks-row { display: flex; gap: 1.25rem; height: 200px; }
   .tank-col { flex: 1; display: flex; flex-direction: column; gap: 8px; height: 100%; }
-  .tank-name { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; }
-  .tank-outer { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; position: relative; background: var(--bg); }
-  .tank-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 1s ease; border-radius: 0 0 6px 6px; }
-  .tank-year-line { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--amber); pointer-events: none; }
-  .tank-year-label { position: absolute; right: 5px; font-size: 9px; color: var(--amber); font-family: 'DM Mono', monospace; transform: translateY(-13px); }
-  .tank-pct { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 13px; font-weight: 500; font-family: 'DM Mono', monospace; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  .tank-name { font-size: 11px; color: #6c757d; text-align: center; }
+  .tank-outer { flex: 1; border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; position: relative; background: #f8f9fa; }
+  .tank-fill { position: absolute; bottom: 0; left: 0; right: 0; transition: height 1s ease; }
+  .tank-year-line { position: absolute; left: 0; right: 0; border-top: 2px dashed #fd7e14; pointer-events: none; }
+  .tank-year-label { position: absolute; right: 5px; font-size: 9px; color: #fd7e14; transform: translateY(-13px); }
+  .tank-pct { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 13px; font-weight: 600; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
-  .alert-workload { background: var(--red-light); border: 1px solid rgba(192,57,43,0.25); border-left: 3px solid var(--red); border-radius: 6px; padding: 0.75rem 1rem; font-size: 12px; color: var(--red); margin-top: 1rem; font-family: 'DM Mono', monospace; line-height: 1.6; }
+  /* Split bar */
+  .split-bar { height: 34px; border-radius: 6px; overflow: hidden; display: flex; margin: 8px 0 6px; }
+  .split-seg { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; overflow: hidden; white-space: nowrap; }
 
-  .split-bar { height: 32px; border-radius: 6px; overflow: hidden; display: flex; margin: 8px 0 4px; }
-  .split-seg { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; font-family: 'DM Mono', monospace; overflow: hidden; white-space: nowrap; }
-  .split-legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
-  .split-legend span { display: flex; align-items: center; gap: 5px; }
-  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  /* Budget breakdown rows */
+  .bd-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid #e9ecef; font-size: 13px; }
+  .bd-row:last-of-type { border-bottom: none; }
+  .bd-label { color: #495057; }
+  .bd-value { font-weight: 500; color: #212529; }
+  .bd-sub { font-size: 10px; color: #adb5bd; margin-left: 4px; }
 
-  .badge-wed { background: var(--red-light) !important; color: var(--red) !important; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; }
-  .badge-other { background: var(--blue-light) !important; color: var(--blue) !important; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; }
-
+  /* Log table */
   .log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .log-table th { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); font-weight: 400; }
-  .log-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); }
+  .log-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #adb5bd; text-align: left; padding: 6px 8px; border-bottom: 1px solid #dee2e6; font-weight: 400; }
+  .log-table td { padding: 7px 8px; border-bottom: 1px solid #f1f3f5; color: #212529; }
   .log-table tr:last-child td { border-bottom: none; }
-  .log-table tr:hover td { background: var(--bg); }
+  .log-table tr:hover td { background: #f8f9fa; }
 
-  .form-control, .form-select { font-family: 'DM Mono', monospace; font-size: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; }
-  .form-control:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,79,122,0.12); background: var(--surface); }
-  .form-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 0.04em; }
+  .btn-del { background: none; border: none; color: #adb5bd; font-size: 15px; padding: 0 4px; cursor: pointer; line-height: 1; }
+  .btn-del:hover { color: #dc3545; }
 
-  .btn-dark-mono { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--text); color: var(--bg); border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; }
-  .btn-dark-mono:hover { background: #333; color: var(--bg); }
-  .btn-outline-mono { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 7px 16px; cursor: pointer; }
-  .btn-danger-soft { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--red-light); color: var(--red); border: 1px solid rgba(192,57,43,0.2); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
-  .btn-del { background: none; border: none; color: var(--faint); font-size: 14px; padding: 0 4px; cursor: pointer; }
-  .btn-del:hover { color: var(--red); }
+  /* Setup steps */
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: #212529; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
+  pre { font-size: 12px; background: #212529; color: #f8f9fa; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
+  code { font-size: 12px; background: #e9ecef; padding: 1px 5px; border-radius: 3px; color: #212529; }
 
-  .status-pill { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--red-light); color: var(--red); border: 1px solid rgba(192,57,43,0.2); }
-  .last-updated { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--faint); }
-
-  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--text); color: var(--bg); font-size: 11px; font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  pre { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--text); color: var(--bg); padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; line-height: 1.7; }
-  code { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--bg); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); color: var(--text); }
+  .section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #adb5bd; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
-<nav class="navbar sticky-top">
-  <span class="navbar-brand"><span class="logo-dot"></span>Expertise Feu — Charge de travail</span>
+<!-- NAVBAR -->
+<nav class="navbar navbar-light bg-white sticky-top px-4">
+  <span class="navbar-brand fw-semibold">
+    <span class="badge bg-danger me-2">EF</span>
+    Expertise Feu — Charge de travail
+  </span>
   <div class="d-flex align-items-center gap-3">
-    <span class="last-updated" id="lastUpdated">—</span>
-    <span class="status-pill" id="statusPill">chargement</span>
+    <small class="text-muted" id="lastUpdated">—</small>
+    <span class="badge status-pill bg-secondary" id="statusPill">chargement</span>
   </div>
 </nav>
 
 <div class="container-xl py-4">
 
-  <ul class="nav nav-tabs" id="mainTabs">
+  <!-- TABS -->
+  <ul class="nav nav-tabs mb-4">
     <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-dashboard">Tableau de bord</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-log">Saisie</a></li>
     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-setup">Déploiement</a></li>
@@ -111,190 +111,235 @@
 
   <div class="tab-content">
 
-    <!-- DASHBOARD -->
+    <!-- ===== DASHBOARD ===== -->
     <div class="tab-pane fade show active" id="tab-dashboard">
-      <div class="row g-3 mb-3" id="metrics"></div>
 
+      <!-- JUMBOTRON -->
+      <div class="jumbotron shadow-sm">
+        <img src="RSS_vs_EF.png" alt="Répartition du temps de travail RSS vs EF">
+        <div class="jumbotron-overlay">
+          <h2 class="text-white fw-bold mb-1" style="font-size:1.6rem;">Répartition du temps de travail</h2>
+          <p class="text-white-50 mb-2" style="font-size:0.9rem;">Budget Expertise Feu 2025 — suivi en temps réel</p>
+          <div class="d-flex gap-3 flex-wrap">
+            <span class="badge bg-danger fs-6 px-3 py-2" id="heroUsed">— h consommées</span>
+            <span class="badge bg-warning text-dark fs-6 px-3 py-2" id="heroBudget">— h budget</span>
+            <span class="badge bg-light text-dark fs-6 px-3 py-2" id="heroDepletion">épuisé le —</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- METRIC CARDS -->
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm h-100 p-3">
+            <div class="metric-label">Budget restant</div>
+            <div class="metric-value text-danger" id="mRemaining">—</div>
+            <div class="metric-sub" id="mRemainingS">—</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm h-100 p-3">
+            <div class="metric-label">Consommé</div>
+            <div class="metric-value text-warning" id="mPct">—</div>
+            <div class="metric-sub" id="mPctS">—</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm h-100 p-3">
+            <div class="metric-label">Rythme actuel</div>
+            <div class="metric-value text-warning" id="mBurn">—</div>
+            <div class="metric-sub">moyenne observée</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="card border-0 shadow-sm h-100 p-3">
+            <div class="metric-label">Budget épuisé le</div>
+            <div class="metric-value text-danger" id="mDepletion" style="font-size:15px;">—</div>
+            <div class="metric-sub">projection au rythme actuel</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TANKS + DOW CHART -->
       <div class="row g-3 mb-3">
         <div class="col-md-6">
-          <div class="card h-100 p-3">
-            <div class="card-title-mono">Cuves de budget</div>
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <div class="section-label">Cuve de budget — 25%</div>
             <div class="tanks-row" id="tanks"></div>
-            <div class="alert-workload" id="alertBanner"></div>
+            <div class="alert alert-danger py-2 px-3 mt-3 mb-0" style="font-size:12px;" id="alertBanner"></div>
           </div>
         </div>
         <div class="col-md-6">
-          <div class="card h-100 p-3">
-            <div class="card-title-mono">Heures EF par jour de la semaine</div>
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <div class="section-label">Heures EF par jour de la semaine</div>
             <div style="position:relative;height:200px;">
-              <canvas id="dowChart" role="img" aria-label="Heures Expertise Feu par jour de la semaine">Heures EF par jour.</canvas>
+              <canvas id="dowChart"></canvas>
             </div>
-            <div class="split-legend mt-2">
-              <span><span class="swatch" style="background:var(--red);"></span>Mercredi (jour imposé)</span>
-              <span><span class="swatch" style="background:var(--blue);"></span>Autres jours</span>
+            <div class="d-flex gap-3 mt-2" style="font-size:11px;color:#6c757d;">
+              <span><span class="badge bg-danger me-1">&nbsp;</span>Mercredi (jour imposé)</span>
+              <span><span class="badge bg-primary me-1">&nbsp;</span>Autres jours</span>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- BUDGET BREAKDOWN + SPLIT BAR + BURN CHART -->
       <div class="row g-3">
         <div class="col-md-4">
-          <div class="card p-3 h-100">
-            <div class="card-title-mono">Calcul du budget EF</div>
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <div class="section-label">Calcul du budget EF</div>
             <div id="budgetBreakdown"></div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card p-3">
-            <div class="card-title-mono">Répartition officielle — 75 / 25</div>
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <div class="section-label">Répartition officielle — 75 / 25</div>
             <div class="split-bar" id="bar25"></div>
-            <div class="split-legend mb-3" id="leg25"></div>
-            <div class="card-title-mono">Répartition demandée — 50 / 50</div>
-            <div class="split-bar" id="bar50"></div>
-            <div class="split-legend" id="leg50"></div>
-            <p class="mt-3" style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;" id="splitNote"></p>
+            <div class="d-flex gap-3 flex-wrap mb-3" style="font-size:11px;color:#6c757d;" id="leg25"></div>
+            <div class="alert alert-warning py-2 px-3 mb-0" style="font-size:12px;" id="splitNote"></div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card p-3">
-            <div class="card-title-mono">Consommation cumulée EF</div>
-            <div style="position:relative;height:200px;">
-              <canvas id="burnChart" role="img" aria-label="Heures Expertise Feu cumulées dans le temps">Heures EF cumulées.</canvas>
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <div class="section-label">Consommation cumulée EF</div>
+            <div style="position:relative;height:220px;">
+              <canvas id="burnChart"></canvas>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SAISIE -->
+    <!-- ===== SAISIE ===== -->
     <div class="tab-pane fade" id="tab-log">
       <div class="row g-3">
         <div class="col-md-5">
-          <div class="card p-3 mb-3">
-            <div class="card-title-mono">Ajouter une entrée</div>
-            <div class="row g-2 mb-2">
+
+          <div class="card border-0 shadow-sm p-3 mb-3">
+            <div class="section-label mb-2">Ajouter une entrée</div>
+            <div class="row g-2 mb-3">
               <div class="col-auto">
-                <label class="form-label">Date</label>
-                <input type="date" class="form-control" id="entryDate" style="width:150px;">
+                <label class="form-label small text-muted">Date</label>
+                <input type="date" class="form-control form-control-sm" id="entryDate" style="width:145px;">
               </div>
               <div class="col-auto">
-                <label class="form-label">Heures EF</label>
-                <input type="number" class="form-control" id="entryHours" min="0.5" max="24" step="0.5" style="width:90px;" placeholder="8">
+                <label class="form-label small text-muted">Heures EF</label>
+                <input type="number" class="form-control form-control-sm" id="entryHours" min="0.5" max="24" step="0.5" style="width:85px;" placeholder="8">
               </div>
               <div class="col">
-                <label class="form-label">Remarque (optionnel)</label>
-                <input type="text" class="form-control" id="entryNote" placeholder="Visite, audience, formation…">
+                <label class="form-label small text-muted">Remarque</label>
+                <input type="text" class="form-control form-control-sm" id="entryNote" placeholder="Visite, audience, formation…">
               </div>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
-              <button class="btn-dark-mono" onclick="addEntry()">Ajouter</button>
-              <button class="btn-outline-mono" onclick="importCSV()">Importer CSV</button>
+              <button class="btn btn-dark btn-sm" onclick="addEntry()">Ajouter</button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="importCSV()">Importer CSV</button>
               <input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="handleCSV(this)">
+              <small class="text-muted">date (AAAA-MM-JJ), heures, remarque</small>
             </div>
-            <div class="mt-1" style="font-size:11px;color:var(--faint);">CSV : date (AAAA-MM-JJ), heures, remarque</div>
-            <div id="syncStatus" style="margin-top:8px;font-size:11px;font-family:'DM Mono',monospace;color:var(--faint);"></div>
+            <div id="syncStatus" class="mt-2 small text-muted"></div>
           </div>
 
-          <div class="card p-3">
-            <div class="card-title-mono d-flex justify-content-between align-items-center">
-              Configuration
-              <button class="btn-danger-soft" type="button" data-bs-toggle="collapse" data-bs-target="#configCollapse">modifier</button>
+          <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="section-label mb-0">Configuration</div>
+              <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#configCollapse" style="font-size:11px;padding:2px 10px;">modifier</button>
             </div>
             <div class="collapse" id="configCollapse">
-              <div style="font-size:11px;color:var(--faint);margin-bottom:8px;">Le budget EF est calculé automatiquement à partir de ces paramètres.</div>
-              <div class="row g-2 mb-3">
+              <hr class="my-2">
+              <div class="row g-2 mb-2">
                 <div class="col-6">
-                  <label class="form-label">Semaines restantes</label>
-                  <input type="number" class="form-control" id="cfgWeeks" value="33">
+                  <label class="form-label small text-muted">Semaines restantes</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgWeeks" value="33">
                 </div>
                 <div class="col-6">
-                  <label class="form-label">Semaines écoulées</label>
-                  <input type="number" class="form-control" id="cfgWeeksElapsed" value="19">
+                  <label class="form-label small text-muted">Semaines écoulées</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgWeeksElapsed" value="19">
                 </div>
                 <div class="col-6">
-                  <label class="form-label">Jours ouvrés/semaine</label>
-                  <input type="number" class="form-control" id="cfgDaysPerWeek" value="4" min="1" max="5">
-                </div>
-              </div>
-              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Déductions communes (EF + RSS)</div>
-              <div class="row g-2 mb-3">
-                <div class="col-6">
-                  <label class="form-label">Jours fériés restants</label>
-                  <input type="number" class="form-control" id="cfgHolidays" value="5">
-                </div>
-                <div class="col-6">
-                  <label class="form-label">Maladie estimée (jours)</label>
-                  <input type="number" class="form-control" id="cfgIllness" value="3">
+                  <label class="form-label small text-muted">Jours ouvrés/semaine</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgDaysPerWeek" value="4" min="1" max="5">
                 </div>
               </div>
-              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Déductions RSS uniquement</div>
-              <div class="row g-2 mb-3">
+              <div class="small text-muted mb-1">Déductions communes (EF + RSS)</div>
+              <div class="row g-2 mb-2">
                 <div class="col-6">
-                  <label class="form-label">Formation (jours)</label>
-                  <input type="number" class="form-control" id="cfgTraining" value="3">
+                  <label class="form-label small text-muted">Jours fériés restants</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgHolidays" value="5">
                 </div>
                 <div class="col-6">
-                  <label class="form-label">Récup. heures sup. (jours)</label>
-                  <input type="number" class="form-control" id="cfgOvertime" value="10">
+                  <label class="form-label small text-muted">Maladie estimée (j)</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgIllness" value="3">
                 </div>
               </div>
-              <button class="btn-dark-mono" onclick="saveConfig()">Enregistrer</button>
+              <div class="small text-muted mb-1">Déductions RSS uniquement</div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label small text-muted">Formation RSS (j)</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgTraining" value="3">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small text-muted">Récup. heures sup. (j)</label>
+                  <input type="number" class="form-control form-control-sm" id="cfgOvertime" value="10">
+                </div>
+              </div>
+              <button class="btn btn-dark btn-sm" onclick="saveConfig()">Enregistrer</button>
             </div>
           </div>
         </div>
 
         <div class="col-md-7">
-          <div class="card p-3">
-            <div class="card-title-mono d-flex justify-content-between align-items-center">
-              Journal
-              <button class="btn-danger-soft" onclick="exportCSV()">Exporter CSV</button>
+          <div class="card border-0 shadow-sm p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="section-label mb-0">Journal des entrées</div>
+              <button class="btn btn-outline-secondary btn-sm" onclick="exportCSV()" style="font-size:11px;">Exporter CSV</button>
             </div>
-            <div style="overflow-y:auto;max-height:400px;">
+            <div style="overflow-y:auto;max-height:420px;">
               <table class="log-table">
                 <thead><tr><th>Date</th><th>Jour</th><th>Heures</th><th>Remarque</th><th></th></tr></thead>
                 <tbody id="logBody"></tbody>
               </table>
             </div>
-            <div id="logTotal" style="margin-top:8px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);text-align:right;"></div>
+            <div id="logTotal" class="mt-2 small text-muted text-end"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- DÉPLOIEMENT -->
+    <!-- ===== DÉPLOIEMENT ===== -->
     <div class="tab-pane fade" id="tab-setup">
-      <div class="card p-4" style="max-width:680px;">
-        <div class="card-title-mono">Guide de déploiement</div>
+      <div class="card border-0 shadow-sm p-4" style="max-width:680px;">
+        <div class="section-label">Guide de déploiement</div>
 
         <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">1</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Créer un dépôt GitHub</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Créez un dépôt public (ex. <code>ef-workload</code>). Déposez <code>index.html</code> comme seul fichier — aucune dépendance, aucune compilation.</div>
+            <div class="fw-semibold mb-1">Créer un dépôt GitHub</div>
+            <div class="text-muted small">Créez un dépôt public (ex. <code>ef-workload</code>). Déposez <code>index.html</code> et l'image <code>RSS_vs_EF.png</code> à la racine. Aucune dépendance, aucune compilation.</div>
           </div>
         </div>
 
         <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">2</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Activer GitHub Pages</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Dépôt → Settings → Pages → Source : <strong>Deploy from branch</strong> → branche <code>main</code>, dossier <code>/ (root)</code>. URL : <code>https://votre-user.github.io/ef-workload/</code></div>
+            <div class="fw-semibold mb-1">Activer GitHub Pages</div>
+            <div class="text-muted small">Dépôt → Settings → Pages → Source : <strong>Deploy from branch</strong> → branche <code>main</code>, dossier <code>/ (root)</code>. URL : <code>https://votre-user.github.io/ef-workload/</code></div>
           </div>
         </div>
 
         <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">3</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Créer une Google Sheet</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Trois colonnes : <code>A: date</code> <code>B: hours</code> <code>C: note</code><br>Ligne 1 = en-têtes. Données à partir de la ligne 2. Format dates : <code>AAAA-MM-JJ</code>.</div>
+            <div class="fw-semibold mb-1">Créer une Google Sheet</div>
+            <div class="text-muted small">Trois colonnes : <code>A: date</code> <code>B: hours</code> <code>C: note</code><br>Ligne 1 = en-têtes. Données à partir de la ligne 2. Format dates : <code>AAAA-MM-JJ</code>.</div>
           </div>
         </div>
 
         <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">4</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Publier en CSV</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Fichier → Partager → Publier sur le web → Feuille 1 → CSV → Publier. Copier l'URL :</div>
+            <div class="fw-semibold mb-1">Publier en CSV</div>
+            <div class="text-muted small">Fichier → Partager → Publier sur le web → Feuille 1 → CSV → Publier.</div>
             <pre>https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=0&single=true&output=csv</pre>
           </div>
         </div>
@@ -302,232 +347,243 @@
         <div class="d-flex gap-3 mb-4 align-items-start">
           <div class="step-num">5</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Connecter le tableau de bord</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Onglet <strong>Saisie → Configuration → modifier</strong>. Collez l'URL CSV. Enregistrez. Le tableau se met à jour automatiquement à chaque chargement.</div>
+            <div class="fw-semibold mb-1">Connecter le tableau de bord</div>
+            <div class="text-muted small">L'URL est déjà codée dans le fichier <code>index.html</code> (ligne <code>SHEET_URL</code>). Si elle change, mettez-la à jour directement dans le fichier et poussez sur GitHub.</div>
           </div>
         </div>
 
         <div class="d-flex gap-3 align-items-start">
           <div class="step-num">6</div>
           <div>
-            <div style="font-weight:500;margin-bottom:4px;">Workflow quotidien</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Ajoutez les lignes directement dans la Google Sheet après chaque session EF. Tout visiteur avec l'URL GitHub Pages voit les données en temps réel. Révoquez le lien CSV à tout moment pour couper l'accès.</div>
+            <div class="fw-semibold mb-1">Workflow quotidien</div>
+            <div class="text-muted small">Ajoutez les lignes directement dans la Google Sheet après chaque session EF. Tout visiteur avec l'URL GitHub Pages voit les données en temps réel. Révoquez le lien CSV à tout moment pour couper l'accès.</div>
           </div>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /tab-content -->
+</div><!-- /container -->
 
 <script>
 const DAYS_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7RJrJC9PQCTOGexmxnSCcWon8lX2-R_o40EUpMJltmNJoMnvsXMw_lJVoOMkiKMxWOcw5KTpe5At6/pub?gid=0&single=true&output=csv';
 
-// Budget parameters — edit these when the situation changes
 const PARAMS = {
-  weeksLeft:        33,   // working weeks remaining in year
-  weeksElapsed:     19,   // weeks already elapsed this year
-  daysPerWeek:       4,   // 5 minus 1 personal holiday day per week
-  publicHolidays:    5,   // days — shared, off the top
-  illnessEstimate:   3,   // days — shared, off the top
-  rssTraining:       3,   // days — RSS only (you're excluded)
-  rssOvertime:      10,   // days — RSS only (generated there)
-  splitEF:        0.25,   // official EF share
-  splitEF50:      0.50,   // requested EF share
-  hoursPerDay:       8,
+  weeksLeft:       33,
+  weeksElapsed:    19,
+  daysPerWeek:      4,   // 5 minus 1 personal holiday/week
+  publicHolidays:   5,
+  illnessEstimate:  3,
+  rssTraining:      3,   // RSS only — you're excluded
+  rssOvertime:     10,   // RSS only
+  splitEF:       0.25,
+  hoursPerDay:      8,
 };
 
-function calcBudget(split) {
-  const gross        = PARAMS.weeksLeft * PARAMS.daysPerWeek;
-  const sharedDeduct = PARAMS.publicHolidays + PARAMS.illnessEstimate;
-  const netPool      = gross - sharedDeduct;
-  const efDays       = netPool * split;
-  const rssDays      = netPool * (1 - split) - PARAMS.rssTraining - PARAMS.rssOvertime;
-  return {
-    gross, sharedDeduct, netPool,
-    efDays, rssDays,
-    efHours: efDays * PARAMS.hoursPerDay,
-    rssHours: rssDays * PARAMS.hoursPerDay,
-  };
+function calcBudget() {
+  const gross   = PARAMS.weeksLeft * PARAMS.daysPerWeek;
+  const deduct  = PARAMS.publicHolidays + PARAMS.illnessEstimate;
+  const netPool = gross - deduct;
+  const efDays  = netPool * PARAMS.splitEF;
+  const rssDays = netPool * (1 - PARAMS.splitEF) - PARAMS.rssTraining - PARAMS.rssOvertime;
+  return { gross, deduct, netPool, efDays, rssDays, efHours: efDays * PARAMS.hoursPerDay };
 }
 
 let cfg = {
-  weeks: PARAMS.weeksLeft,
+  weeks:        PARAMS.weeksLeft,
   weeksElapsed: PARAMS.weeksElapsed,
-  get budget() { return calcBudget(PARAMS.splitEF).efHours; },
-  get workDays() { return calcBudget(PARAMS.splitEF).netPool; },
-  sheetUrl: SHEET_URL
+  sheetUrl:     SHEET_URL,
+  get budget()  { return calcBudget().efHours; }
 };
+
 let entries = [
   { date: '2025-01-13', hours: 12, note: 'Semaine 1 — visites de site' },
-  { date: '2025-01-20', hours: 8, note: 'Semaine 2 (2 jours fériés)' }
+  { date: '2025-01-20', hours: 8,  note: 'Semaine 2 (2 jours fériés)' }
 ];
 
+/* ---- Storage ---- */
 function loadStorage() {
   try {
     const c = localStorage.getItem('fi_cfg');
-    if (c) cfg = { ...cfg, ...JSON.parse(c) };
+    if (c) { const p = JSON.parse(c); Object.assign(PARAMS, p); cfg.weeks = PARAMS.weeksLeft; cfg.weeksElapsed = PARAMS.weeksElapsed; }
     const e = localStorage.getItem('fi_entries');
     if (e) entries = JSON.parse(e);
-    document.getElementById('cfgWeeks').value        = PARAMS.weeksLeft;
-    document.getElementById('cfgWeeksElapsed').value  = PARAMS.weeksElapsed;
-    document.getElementById('cfgDaysPerWeek').value   = PARAMS.daysPerWeek;
-    document.getElementById('cfgHolidays').value      = PARAMS.publicHolidays;
-    document.getElementById('cfgIllness').value       = PARAMS.illnessEstimate;
-    document.getElementById('cfgTraining').value      = PARAMS.rssTraining;
-    document.getElementById('cfgOvertime').value      = PARAMS.rssOvertime;
-
   } catch(err) {}
+  document.getElementById('cfgWeeks').value        = PARAMS.weeksLeft;
+  document.getElementById('cfgWeeksElapsed').value = PARAMS.weeksElapsed;
+  document.getElementById('cfgDaysPerWeek').value  = PARAMS.daysPerWeek;
+  document.getElementById('cfgHolidays').value     = PARAMS.publicHolidays;
+  document.getElementById('cfgIllness').value      = PARAMS.illnessEstimate;
+  document.getElementById('cfgTraining').value     = PARAMS.rssTraining;
+  document.getElementById('cfgOvertime').value     = PARAMS.rssOvertime;
 }
 
 function saveStorage() {
-  localStorage.setItem('fi_cfg', JSON.stringify(cfg));
+  localStorage.setItem('fi_cfg', JSON.stringify(PARAMS));
   localStorage.setItem('fi_entries', JSON.stringify(entries));
 }
 
 function saveConfig() {
-  PARAMS.weeksLeft        = parseInt(document.getElementById('cfgWeeks').value)        || 33;
-  PARAMS.weeksElapsed     = parseInt(document.getElementById('cfgWeeksElapsed').value) || 19;
-  PARAMS.daysPerWeek      = parseInt(document.getElementById('cfgDaysPerWeek').value)  || 4;
-  PARAMS.publicHolidays   = parseInt(document.getElementById('cfgHolidays').value)     || 5;
-  PARAMS.illnessEstimate  = parseInt(document.getElementById('cfgIllness').value)      || 3;
-  PARAMS.rssTraining      = parseInt(document.getElementById('cfgTraining').value)     || 3;
-  PARAMS.rssOvertime      = parseInt(document.getElementById('cfgOvertime').value)     || 10;
-  cfg.weeks        = PARAMS.weeksLeft;
-  cfg.weeksElapsed = PARAMS.weeksElapsed;
-  saveStorage();
-  renderAll();
+  PARAMS.weeksLeft       = parseInt(document.getElementById('cfgWeeks').value)        || 33;
+  PARAMS.weeksElapsed    = parseInt(document.getElementById('cfgWeeksElapsed').value) || 19;
+  PARAMS.daysPerWeek     = parseInt(document.getElementById('cfgDaysPerWeek').value)  || 4;
+  PARAMS.publicHolidays  = parseInt(document.getElementById('cfgHolidays').value)     || 5;
+  PARAMS.illnessEstimate = parseInt(document.getElementById('cfgIllness').value)      || 3;
+  PARAMS.rssTraining     = parseInt(document.getElementById('cfgTraining').value)     || 3;
+  PARAMS.rssOvertime     = parseInt(document.getElementById('cfgOvertime').value)     || 10;
+  cfg.weeks = PARAMS.weeksLeft; cfg.weeksElapsed = PARAMS.weeksElapsed;
+  saveStorage(); renderAll();
   document.getElementById('syncStatus').textContent = 'Configuration enregistrée.';
   setTimeout(() => document.getElementById('syncStatus').textContent = '', 2500);
 }
 
+/* ---- Sheet fetch ---- */
 async function fetchSheet() {
-  if (!cfg.sheetUrl) return;
   document.getElementById('statusPill').textContent = 'actualisation…';
   try {
-    const r = await fetch(cfg.sheetUrl);
+    const r = await fetch(SHEET_URL);
     const text = await r.text();
-    const lines = text.trim().split('\n').slice(1);
-    const fetched = [];
-    lines.forEach(line => {
-      const parts = line.split(',');
-      if (parts.length < 2) return;
-      const date = parts[0].trim().replace(/"/g, '');
-      const hours = parseFloat(parts[1]);
-      const note = (parts[2] || '').trim().replace(/"/g, '');
-      if (date && !isNaN(hours)) fetched.push({ date, hours, note });
-    });
-    if (fetched.length > 0) {
-      entries = fetched;
-      saveStorage();
-      renderAll();
+    const fetched = text.trim().split('\n').slice(1).reduce((acc, line) => {
+      const p = line.split(',');
+      if (p.length < 2) return acc;
+      const date = p[0].trim().replace(/"/g,'');
+      const hours = parseFloat(p[1]);
+      const note = (p[2]||'').trim().replace(/"/g,'');
+      if (date && !isNaN(hours)) acc.push({ date, hours, note });
+      return acc;
+    }, []);
+    if (fetched.length) {
+      entries = fetched; saveStorage(); renderAll();
       const pill = document.getElementById('statusPill');
-      pill.textContent = 'en direct';
-      pill.style.cssText += ';background:#e8f5f2;color:#0d6b5a;border-color:rgba(13,107,90,0.2);';
+      pill.textContent = 'en direct'; pill.className = 'badge status-pill bg-success';
       document.getElementById('lastUpdated').textContent =
-        'mis à jour ' + new Date().toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
+        'mis à jour ' + new Date().toLocaleTimeString('fr-BE', { hour:'2-digit', minute:'2-digit' });
     }
   } catch(err) {
     const pill = document.getElementById('statusPill');
-    pill.textContent = 'hors ligne';
-    pill.style.cssText += ';background:#fdf3e3;color:#a05c00;';
+    pill.textContent = 'hors ligne'; pill.className = 'badge status-pill bg-warning text-dark';
   }
 }
 
-function totalHours() { return entries.reduce((s, e) => s + e.hours, 0); }
+/* ---- Stats ---- */
+function totalHours() { return entries.reduce((s,e) => s + e.hours, 0); }
 
 function burnStats() {
   const used = totalHours();
-  const rem = cfg.budget - used;
-  const sortedDates = [...entries].map(e => e.date).sort();
+  const rem  = cfg.budget - used;
+  const sorted = [...entries].map(e => e.date).sort();
   let weeksSpanned = 1;
-  if (sortedDates.length >= 2) {
-    const first = new Date(sortedDates[0] + 'T12:00:00');
-    const last  = new Date(sortedDates[sortedDates.length - 1] + 'T12:00:00');
-    weeksSpanned = Math.max(1, Math.round((last - first) / (7 * 86400000)) + 1);
+  if (sorted.length >= 2) {
+    const ms = new Date(sorted[sorted.length-1]+'T12:00:00') - new Date(sorted[0]+'T12:00:00');
+    weeksSpanned = Math.max(1, Math.round(ms / (7*86400000)) + 1);
   }
   const burnPerWeek = used / weeksSpanned;
   const weeksToEmpty = burnPerWeek > 0 ? rem / burnPerWeek : Infinity;
-  const projDate = isFinite(weeksToEmpty)
-    ? new Date(Date.now() + weeksToEmpty * 7 * 86400000) : null;
+  const projDate = isFinite(weeksToEmpty) ? new Date(Date.now() + weeksToEmpty*7*86400000) : null;
   return { used, rem, burnPerWeek, weeksToEmpty, projDate };
 }
 
+/* ---- Render functions ---- */
 function renderMetrics() {
   const { used, rem, burnPerWeek, weeksToEmpty, projDate } = burnStats();
-  const pctUsed = Math.round(used / cfg.budget * 100);
+  const pct = Math.round(used / cfg.budget * 100);
   const projStr = projDate
-    ? projDate.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+    ? projDate.toLocaleDateString('fr-BE', { day:'numeric', month:'long', year:'numeric' }) : '—';
 
-  document.getElementById('metrics').innerHTML = [
-    { label: 'budget restant', value: Math.round(rem) + 'h', sub: `sur ${cfg.budget}h alloués`, cls: rem < 80 ? 'red' : '' },
-    { label: 'consommé', value: pctUsed + '%', sub: `${Math.round(used)}h enregistrées`, cls: pctUsed > 40 ? (pctUsed > 70 ? 'red' : 'amber') : '' },
-    { label: 'rythme actuel', value: (Math.round(burnPerWeek * 10) / 10) + 'h/sem', sub: 'moyenne observée', cls: 'amber' },
-    { label: 'budget épuisé le', value: projStr, sub: 'projection au rythme actuel', cls: 'red' }
-  ].map(m => `
-    <div class="col-6 col-md-3">
-      <div class="metric-card">
-        <div class="metric-label">${m.label}</div>
-        <div class="metric-value ${m.cls}" style="font-size:${m.value.length > 10 ? '15px' : '22px'}">${m.value}</div>
-        <div class="metric-sub">${m.sub}</div>
-      </div>
-    </div>`).join('');
+  document.getElementById('mRemaining').textContent  = Math.round(rem) + 'h';
+  document.getElementById('mRemainingS').textContent = `sur ${Math.round(cfg.budget)}h alloués`;
+  document.getElementById('mPct').textContent        = pct + '%';
+  document.getElementById('mPctS').textContent       = `${Math.round(used)}h enregistrées`;
+  document.getElementById('mBurn').textContent       = (Math.round(burnPerWeek*10)/10) + 'h/sem';
+  document.getElementById('mDepletion').textContent  = projStr;
+
+  // Hero badges
+  document.getElementById('heroUsed').textContent     = Math.round(used) + 'h consommées';
+  document.getElementById('heroBudget').textContent   = Math.round(cfg.budget) + 'h budget';
+  document.getElementById('heroDepletion').textContent = 'épuisé le ' + (projStr !== '—' ? projStr : '?');
 }
 
 function renderTanks() {
   const { used, weeksToEmpty, projDate } = burnStats();
-  const usedPct  = Math.min(used / cfg.budget * 100, 100);
-  const budget50 = cfg.budget * 2;
-  const usedPct50 = Math.min(used / budget50 * 100, 100);
-  const yearPct  = cfg.weeksElapsed / 52 * 100;
+  const usedPct = Math.min(used / cfg.budget * 100, 100);
+  const yearPct = PARAMS.weeksElapsed / 52 * 100;
 
-  function tankHTML(label, usedP, color, totalH) {
-    return `<div class="tank-col">
+  document.getElementById('tanks').innerHTML = `
+    <div class="tank-col">
       <div class="tank-outer">
-        <div class="tank-fill" style="height:${usedP.toFixed(1)}%;background:${color};"></div>
+        <div class="tank-fill" style="height:${usedPct.toFixed(1)}%;background:#dc3545;"></div>
         <div class="tank-year-line" style="bottom:${(100-yearPct).toFixed(1)}%;">
-          <span class="tank-year-label">sem. ${cfg.weeksElapsed}/52</span>
+          <span class="tank-year-label">sem. ${PARAMS.weeksElapsed}/52</span>
         </div>
-        ${usedP > 8 ? `<div class="tank-pct">${Math.round(usedP)}%</div>` : ''}
+        ${usedPct > 8 ? `<div class="tank-pct">${Math.round(usedPct)}%</div>` : ''}
       </div>
-      <div class="tank-name">${label}<br><span style="color:var(--faint);font-size:9px;">${totalH}h budget</span></div>
+      <div class="tank-name">budget EF 25%<br><small class="text-muted">${Math.round(cfg.budget)}h total</small></div>
+    </div>`;
+
+  const projStr = projDate
+    ? projDate.toLocaleDateString('fr-BE', { day:'numeric', month:'long', year:'numeric' })
+    : 'une date indéterminée';
+  const weeksAfter = isFinite(weeksToEmpty) ? Math.round(PARAMS.weeksLeft - weeksToEmpty) : null;
+
+  document.getElementById('alertBanner').innerHTML =
+    `⚠️ Au rythme actuel, le budget EF sera <strong>épuisé le ${projStr}</strong>`
+    + (weeksAfter > 0 ? ` — soit <strong>${weeksAfter} semaine(s) avant la fin de la période</strong>.` : '.');
+}
+
+function renderBudgetBreakdown() {
+  const b = calcBudget();
+
+  function row(label, val, sub, cls) {
+    return `<div class="bd-row">
+      <span class="bd-label ${cls||''}">${label}</span>
+      <span class="bd-value ${cls||''}">${val}${sub ? `<span class="bd-sub">${sub}</span>` : ''}</span>
     </div>`;
   }
 
-  document.getElementById('tanks').innerHTML =
-    tankHTML('officiel 25%', usedPct, '#c0392b', cfg.budget) +
-    tankHTML('nécessaire 50%', usedPct50, '#0d6b5a', budget50);
+  document.getElementById('budgetBreakdown').innerHTML = `
+    ${row(`${PARAMS.weeksLeft} sem. × ${PARAMS.daysPerWeek}j`, `${b.gross}j`)}
+    ${row('− Jours fériés', `−${PARAMS.publicHolidays}j`, 'commun', 'text-muted')}
+    ${row('− Maladie estimée', `−${PARAMS.illnessEstimate}j`, 'commun', 'text-muted')}
+    <div class="bd-row fw-semibold text-primary">
+      <span>Pool net disponible</span><span>${b.netPool}j</span>
+    </div>
+    <div style="height:6px;"></div>
+    ${row('EF à 25% du pool', `${b.efDays.toFixed(1)}j`)}
+    ${row('RSS à 75% du pool', `${(b.netPool*0.75).toFixed(1)}j`, '', 'text-muted')}
+    ${row('− Formation RSS', `−${PARAMS.rssTraining}j`, 'RSS seul', 'text-muted')}
+    ${row('− Récup. heures sup.', `−${PARAMS.rssOvertime}j`, 'RSS seul', 'text-muted')}
+    ${row('RSS net effectif', `${b.rssDays.toFixed(1)}j`, '', 'text-muted')}
+    <div class="alert alert-danger py-2 px-3 mt-3 mb-0 text-center">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;">Budget EF officiel (25%)</div>
+      <div style="font-size:24px;font-weight:700;">${Math.round(b.efHours)}h <small style="font-size:14px;">${b.efDays.toFixed(1)}j</small></div>
+    </div>`;
+}
 
-  // Dynamic alert — calculates weeks remaining in year after budget exhaustion
-  const projStr = projDate
-    ? projDate.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' })
-    : 'une date indéterminée';
+function renderSplitBar() {
+  const b = calcBudget();
+  const fi = Math.round(b.efDays);
+  const ur = Math.round(b.rssDays);
 
-  let alertText = `⚠ Au rythme actuel, le budget officiel 25% sera <strong>épuisé le ${projStr}</strong>`;
-  if (isFinite(weeksToEmpty)) {
-    const weeksAfterEmpty = Math.round(cfg.weeks - weeksToEmpty);
-    if (weeksAfterEmpty > 0) {
-      alertText += ` — soit <strong>${weeksAfterEmpty} semaine(s) avant la fin de l'année</strong>.`;
-    } else {
-      alertText += ` — dans environ ${Math.round(weeksToEmpty)} semaine(s).`;
-    }
-  } else {
-    alertText += '.';
-  }
-  alertText += ' La cuve 50% illustre ce qu\'une répartition équitable représenterait.';
-  document.getElementById('alertBanner').innerHTML = alertText;
+  document.getElementById('bar25').innerHTML = `
+    <div class="split-seg" style="width:75%;background:#0d6efd;color:#fff;">RSS 75% (${ur}j net)</div>
+    <div class="split-seg" style="width:25%;background:#dc3545;color:#fff;">EF 25% (${fi}j)</div>`;
+  document.getElementById('leg25').innerHTML = `
+    <span><span class="badge bg-primary me-1">&nbsp;</span>Risques sous-sol : ${ur} jours nets</span>
+    <span><span class="badge bg-danger me-1">&nbsp;</span>Expertise Feu : ${fi} jours</span>`;
+  document.getElementById('splitNote').innerHTML =
+    `RSS absorbe ${PARAMS.rssTraining + PARAMS.rssOvertime}j de déductions internes (formations + récupération). Ces jours ne vous affectent pas.`;
 }
 
 let dowChart = null, burnChart = null;
 
 function renderDow() {
   const counts = [0,0,0,0,0,0,0];
-  entries.forEach(e => { counts[new Date(e.date + 'T12:00:00').getDay()] += e.hours; });
+  entries.forEach(e => { counts[new Date(e.date+'T12:00:00').getDay()] += e.hours; });
   const labels = ['Lun','Mar','Mer','Jeu','Ven'];
-  const data = [1,2,3,4,5].map(i => counts[i]);
-  const colors = labels.map(l => l === 'Mer' ? '#c0392b' : '#1a4f7a');
+  const data   = [1,2,3,4,5].map(i => counts[i]);
+  const colors = labels.map(l => l === 'Mer' ? '#dc3545' : '#0d6efd');
 
   if (dowChart) dowChart.destroy();
   dowChart = new Chart(document.getElementById('dowChart'), {
@@ -537,8 +593,8 @@ function renderDow() {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + 'h EF' } } },
       scales: {
-        x: { ticks: { color: '#7a7870', font: { size: 12, family: "'DM Mono', monospace" } }, grid: { display: false } },
-        y: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" }, callback: v => v + 'h' }, grid: { color: 'rgba(0,0,0,0.05)' } }
+        x: { ticks: { color:'#6c757d', font:{size:12} }, grid:{ display:false } },
+        y: { ticks: { color:'#6c757d', font:{size:11}, callback: v => v+'h' }, grid:{ color:'rgba(0,0,0,0.05)' } }
       }
     }
   });
@@ -550,104 +606,48 @@ function renderBurn() {
   if (!sorted.length) return;
   let cum = 0;
   const labels = sorted.map(e => new Date(e.date+'T12:00:00').toLocaleDateString('fr-BE',{day:'numeric',month:'short'}));
-  const data = sorted.map(e => { cum += e.hours; return cum; });
+  const data   = sorted.map(e => { cum += e.hours; return cum; });
 
   burnChart = new Chart(document.getElementById('burnChart'), {
     type: 'line',
-    data: { labels, datasets: [{ data, borderColor: '#c0392b', backgroundColor: 'rgba(192,57,43,0.07)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#c0392b', borderWidth: 2 }] },
+    data: { labels, datasets: [{
+      data, borderColor: '#dc3545', backgroundColor: 'rgba(220,53,69,0.08)',
+      fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#dc3545', borderWidth: 2
+    }]},
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + 'h cumulé' } } },
+      plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label: c => c.parsed.y.toFixed(1)+'h cumulé' } } },
       scales: {
-        x: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" } }, grid: { display: false } },
-        y: { ticks: { color: '#7a7870', font: { size: 11, family: "'DM Mono', monospace" }, callback: v => v + 'h' }, grid: { color: 'rgba(0,0,0,0.05)' }, max: cfg.budget }
+        x: { ticks:{ color:'#6c757d', font:{size:11} }, grid:{ display:false } },
+        y: { ticks:{ color:'#6c757d', font:{size:11}, callback: v=>v+'h' }, grid:{ color:'rgba(0,0,0,0.05)' }, max: cfg.budget }
       }
     }
   });
 }
 
-function renderBudgetBreakdown() {
-  const b25 = calcBudget(PARAMS.splitEF);
-  const b50 = calcBudget(PARAMS.splitEF50);
-
-  function row(label, value, sub, color) {
-    return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);">
-      <span style="font-size:12px;color:${color||'var(--text)'};">${label}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:12px;color:${color||'var(--text)'};">${value}${sub?`<span style="font-size:10px;color:var(--faint);margin-left:4px;">${sub}</span>`:''}
-      </span></div>`;
-  }
-
-  document.getElementById('budgetBreakdown').innerHTML = `
-    ${row('Semaines × 4j (−1 congé/sem.)', `${PARAMS.weeksLeft} × ${PARAMS.daysPerWeek} = ${b25.gross}j`)}
-    ${row('− Jours fériés', `−${PARAMS.publicHolidays}j`, 'commun', 'var(--muted)')}
-    ${row('− Maladie estimée', `−${PARAMS.illnessEstimate}j`, 'commun', 'var(--muted)')}
-    ${row('Pool net disponible', `${b25.netPool}j`, '', 'var(--blue)')}
-    <div style="height:6px;"></div>
-    ${row('EF à 25% du pool', `${b25.efDays.toFixed(1)}j`)}
-    ${row('RSS à 75% du pool', `${(b25.netPool*0.75).toFixed(1)}j`, '', 'var(--muted)')}
-    ${row('− Formation RSS', `−${PARAMS.rssTraining}j`, 'RSS seul', 'var(--muted)')}
-    ${row('− Récup. heures sup.', `−${PARAMS.rssOvertime}j`, 'RSS seul', 'var(--muted)')}
-    ${row('RSS net effectif', `${b25.rssDays.toFixed(1)}j`, '', 'var(--muted)')}
-    <div style="height:6px;"></div>
-    <div style="background:var(--red-light);border-left:3px solid var(--red);border-radius:4px;padding:8px 10px;margin-top:4px;">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:.06em;">Budget EF officiel (25%)</div>
-      <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--red);">${Math.round(b25.efHours)}h <span style="font-size:13px;">${b25.efDays.toFixed(1)}j</span></div>
-    </div>
-    <div style="background:var(--teal-light);border-left:3px solid var(--teal);border-radius:4px;padding:8px 10px;margin-top:6px;">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;">Budget EF demandé (50%)</div>
-      <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--teal);">${Math.round(b50.efHours)}h <span style="font-size:13px;">${b50.efDays.toFixed(1)}j</span></div>
-    </div>`;
-}
-
-function renderSplitBars() {
-  const b25 = calcBudget(PARAMS.splitEF);
-  const b50 = calcBudget(PARAMS.splitEF50);
-  const fi25 = Math.round(b25.efDays);
-  const ur25 = Math.round(b25.rssDays);
-  const fi50 = Math.round(b50.efDays);
-  const ur50 = Math.round(b50.rssDays);
-
-  document.getElementById('bar25').innerHTML = `
-    <div class="split-seg" style="width:75%;background:var(--blue);color:#eef3f8;">RSS 75% (${ur25}j)</div>
-    <div class="split-seg" style="width:25%;background:var(--red);color:#fdf0ee;">EF 25% (${fi25}j)</div>`;
-  document.getElementById('leg25').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol net : ${ur25} jours</span>
-    <span><span class="swatch" style="background:var(--red);"></span>Expertise Feu : ${fi25} jours</span>`;
-
-  document.getElementById('bar50').innerHTML = `
-    <div class="split-seg" style="width:50%;background:var(--blue);color:#eef3f8;">RSS 50%</div>
-    <div class="split-seg" style="width:50%;background:var(--teal);color:#e8f5f2;">EF 50% (${fi50}j)</div>`;
-  document.getElementById('leg50').innerHTML = `
-    <span><span class="swatch" style="background:var(--blue);"></span>Risques sous-sol net : ${ur50} jours</span>
-    <span><span class="swatch" style="background:var(--teal);"></span>Expertise Feu : ${fi50} jours</span>`;
-
-  document.getElementById('splitNote').textContent =
-    `À 50/50 : +${fi50 - fi25} jours EF. RSS passe de ${ur25}j à ${ur50}j net (hors formations et récup.).`;
-}
-
 function renderLog() {
   const sorted = [...entries].sort((a,b) => b.date.localeCompare(a.date));
   document.getElementById('logBody').innerHTML = sorted.map(e => {
-    const d = new Date(e.date + 'T12:00:00');
+    const d   = new Date(e.date+'T12:00:00');
     const dow = DAYS_FR[d.getDay()];
     const isMer = dow === 'Mer';
     return `<tr>
-      <td style="font-family:'DM Mono',monospace;">${d.toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td><span class="badge rounded-pill ${isMer?'badge-wed':'badge-other'}">${dow}</span></td>
-      <td style="font-family:'DM Mono',monospace;">${e.hours}h</td>
-      <td style="color:var(--muted);">${e.note||'—'}</td>
+      <td>${d.toLocaleDateString('fr-BE',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td><span class="badge ${isMer?'bg-danger':'bg-primary'} rounded-pill">${dow}</span></td>
+      <td>${e.hours}h</td>
+      <td class="text-muted">${e.note||'—'}</td>
       <td><button class="btn-del" onclick="delEntry('${e.date}',${e.hours})">×</button></td>
     </tr>`;
   }).join('');
   const total = totalHours();
-  document.getElementById('logTotal').textContent =
-    `Total : ${total}h — ${Math.round(total / 8 * 10) / 10} jours`;
+  document.getElementById('logTotal').textContent = `Total : ${total}h — ${Math.round(total/8*10)/10} jours`;
 }
 
+/* ---- Entry management ---- */
 function addEntry() {
-  const date = document.getElementById('entryDate').value;
+  const date  = document.getElementById('entryDate').value;
   const hours = parseFloat(document.getElementById('entryHours').value);
-  const note = document.getElementById('entryNote').value.trim();
+  const note  = document.getElementById('entryNote').value.trim();
   if (!date || !hours || hours <= 0) {
     document.getElementById('syncStatus').textContent = 'Veuillez renseigner la date et les heures.';
     return;
@@ -655,7 +655,7 @@ function addEntry() {
   entries.push({ date, hours, note });
   saveStorage();
   document.getElementById('entryHours').value = '';
-  document.getElementById('entryNote').value = '';
+  document.getElementById('entryNote').value  = '';
   renderAll();
   document.getElementById('syncStatus').textContent = 'Entrée ajoutée. Pensez à mettre à jour votre Google Sheet.';
   setTimeout(() => document.getElementById('syncStatus').textContent = '', 4000);
@@ -663,53 +663,48 @@ function addEntry() {
 
 function delEntry(date, hours) {
   const idx = entries.findIndex(e => e.date === date && e.hours === hours);
-  if (idx > -1) { entries.splice(idx, 1); saveStorage(); renderAll(); }
+  if (idx > -1) { entries.splice(idx,1); saveStorage(); renderAll(); }
 }
 
 function exportCSV() {
   const rows = ['date,hours,note',
     ...entries.sort((a,b) => a.date.localeCompare(b.date)).map(e => `${e.date},${e.hours},"${e.note||''}"`)
   ];
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'ef_log.csv';
-  a.click();
+  a.href = URL.createObjectURL(new Blob([rows.join('\n')], {type:'text/csv'}));
+  a.download = 'ef_log.csv'; a.click();
 }
 
 function importCSV() { document.getElementById('csvFile').click(); }
 
 function handleCSV(input) {
-  const file = input.files[0];
-  if (!file) return;
+  const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const lines = ev.target.result.trim().split('\n');
-    const imported = [];
-    lines.forEach((line, i) => {
-      if (i === 0 && line.toLowerCase().startsWith('date')) return;
-      const parts = line.split(',');
-      if (parts.length < 2) return;
-      const date = parts[0].trim().replace(/"/g,'');
-      const hours = parseFloat(parts[1]);
-      const note = (parts[2]||'').trim().replace(/"/g,'');
-      if (date && !isNaN(hours)) imported.push({ date, hours, note });
-    });
-    if (imported.length) {
-      entries = imported; saveStorage(); renderAll();
-      document.getElementById('syncStatus').textContent = `${imported.length} entrées importées.`;
-    }
+    const imported = ev.target.result.trim().split('\n').reduce((acc, line, i) => {
+      if (i===0 && line.toLowerCase().startsWith('date')) return acc;
+      const p = line.split(',');
+      if (p.length < 2) return acc;
+      const date = p[0].trim().replace(/"/g,'');
+      const hours = parseFloat(p[1]);
+      const note = (p[2]||'').trim().replace(/"/g,'');
+      if (date && !isNaN(hours)) acc.push({date,hours,note});
+      return acc;
+    }, []);
+    if (imported.length) { entries = imported; saveStorage(); renderAll(); document.getElementById('syncStatus').textContent = `${imported.length} entrées importées.`; }
   };
   reader.readAsText(file);
 }
 
 function renderAll() {
-  renderMetrics(); renderTanks(); renderDow(); renderBurn(); renderBudgetBreakdown(); renderSplitBars(); renderLog();
+  renderMetrics(); renderTanks(); renderBudgetBreakdown(); renderSplitBar(); renderDow(); renderBurn(); renderLog();
 }
 
+/* ---- Init ---- */
 loadStorage();
 renderAll();
 document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('statusPill').className = 'badge status-pill bg-secondary';
 fetchSheet();
 </script>
 </body>
